@@ -1,0 +1,174 @@
+import { useEffect, useState } from "react"
+import { Link } from "react-router"
+import { LanguageSwitch } from "../components/LanguageSwitch.tsx"
+import { PageHeading } from "../components/PageHeading.tsx"
+import { appConfig } from "../config/hospital.ts"
+import { formatAboutWaitMinutes } from "../domain/queue.ts"
+import {
+  getSupabaseClient,
+  readSupabaseState,
+} from "../lib/supabase/client.ts"
+import type { BoardSnapshotRow } from "../lib/supabase/database.types.ts"
+import { supabaseErrorMessage } from "../lib/supabase/errors.ts"
+import { fetchBoardSnapshot } from "../lib/supabase/queueApi.ts"
+import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
+
+const POLL_MS = 5000
+
+export function BoardPage() {
+  const messages = useMessages()
+  const { preferences } = usePreferences()
+  const supabaseState = readSupabaseState(import.meta.env)
+  const client = getSupabaseClient()
+  const backendReady = supabaseState.status === "ready" && client !== null
+  const [rows, setRows] = useState<BoardSnapshotRow[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null)
+  const [loading, setLoading] = useState(backendReady)
+
+  useEffect(() => {
+    if (!backendReady || !client) {
+      return
+    }
+    const supabase = client
+
+    let cancelled = false
+
+    async function load() {
+      const { data, error: loadError } = await fetchBoardSnapshot(supabase)
+      if (cancelled) {
+        return
+      }
+      if (loadError) {
+        setError(supabaseErrorMessage(loadError, messages.boardLoadError))
+        setLoading(false)
+        return
+      }
+      setRows((data as BoardSnapshotRow[]) ?? [])
+      setError(null)
+      setUpdatedAt(new Date().toISOString())
+      setLoading(false)
+    }
+
+    void load()
+    const timer = window.setInterval(() => {
+      void load()
+    }, POLL_MS)
+
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [backendReady, client, messages.boardLoadError])
+
+  const hindi = preferences.language === "hi"
+
+  return (
+    <div className="app-shell board-shell">
+      <a className="skip-link" href="#main">
+        {messages.skipToContent}
+      </a>
+      <header className="topbar">
+        <div className="brand-block">
+          <p className="brand">{appConfig.name}</p>
+          <p className="hospital">{messages.hospitalName}</p>
+        </div>
+        <div className="topbar-actions">
+          <LanguageSwitch />
+          <Link className="choice" to="/">
+            {messages.home}
+          </Link>
+        </div>
+      </header>
+      <main id="main" className="main board-main">
+        <PageHeading title={messages.boardTitle}>
+          <p>{messages.boardPrivacy}</p>
+          {supabaseState.status === "unconfigured" ? (
+            <p className="form-error" role="status">
+              {messages.backendUnconfigured}
+            </p>
+          ) : null}
+          {supabaseState.status === "refused" ? (
+            <p className="form-error" role="alert">
+              {messages.backendRefusedKey}
+            </p>
+          ) : null}
+          {backendReady && loading ? (
+            <p role="status">{messages.boardLoading}</p>
+          ) : null}
+          {error ? (
+            <p className="form-error" role="alert">
+              {error}
+            </p>
+          ) : null}
+          {updatedAt ? (
+            <p role="status">
+              {messages.boardUpdated}: {new Date(updatedAt).toLocaleTimeString()}
+            </p>
+          ) : null}
+        </PageHeading>
+
+        {backendReady && !loading && rows.length === 0 ? (
+          <p>{messages.boardEmpty}</p>
+        ) : null}
+
+        <div className="board-grid">
+          {rows.map((row) => {
+            const name = hindi ? row.department_name_hi : row.department_name_en
+            const room = hindi ? row.room_hi : row.room_en
+            const floor = hindi ? row.floor_hi : row.floor_en
+            const waiting = row.next_waiting_tokens ?? []
+            return (
+              <section
+                key={row.department_code}
+                className="panel board-card"
+                aria-label={name}
+              >
+                <h2>{name}</h2>
+                <p>
+                  {room} · {floor}
+                </p>
+                <p className="board-token">
+                  {row.called_token ?? messages.notAvailable}
+                </p>
+                <p>
+                  {messages.boardNext}:{" "}
+                  {waiting.length > 0 ? waiting.join(", ") : messages.notAvailable}
+                </p>
+                <p>
+                  {messages.waitLabel}:{" "}
+                  {row.estimated_wait_minutes == null
+                    ? messages.notAvailable
+                    : formatAboutWaitMinutes(
+                        row.estimated_wait_minutes,
+                        messages.waitAboutTemplate,
+                      )}
+                </p>
+                <p>
+                  {doctorNotice(row.availability, row.delay_minutes, messages)}
+                </p>
+                {row.clock_scale === 10 ? (
+                  <p>{messages.boardClock10x}</p>
+                ) : null}
+              </section>
+            )
+          })}
+        </div>
+      </main>
+    </div>
+  )
+}
+
+function doctorNotice(
+  availability: string,
+  delayMinutes: number,
+  messages: ReturnType<typeof useMessages>,
+): string {
+  if (availability === "on_break") {
+    return messages.doctorBreak
+  }
+  if (availability === "running_late") {
+    return `${messages.doctorLate}: ${delayMinutes} ${messages.minutesUnit}`
+  }
+  return messages.doctorAvailable
+}

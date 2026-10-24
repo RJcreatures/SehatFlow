@@ -3,6 +3,7 @@ import { useNavigate } from "react-router"
 import { readyLanguages } from "../i18n/index.ts"
 import { onboardingVisitPath } from "../navigation/onboarding.ts"
 import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
+import { AppBrand } from "./AppBrand.tsx"
 import { IconEmergency, IconRegister } from "./icons.tsx"
 
 type Step = "language" | "visit"
@@ -27,6 +28,9 @@ export function OnboardingFlow() {
 
   return (
     <section className="onboarding panel" aria-labelledby="onboarding-title">
+      <div className="onboarding-brand">
+        <AppBrand variant="hero" showTagline />
+      </div>
       <h1 id="onboarding-title">{messages.onboardingTitle}</h1>
       <p>{messages.onboardingBody}</p>
 

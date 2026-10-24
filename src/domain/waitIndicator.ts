@@ -172,4 +172,5 @@ export function reconcileWaitDisplay(input: {
   }
 }
 
-export const WAIT_POLL_MS = 45_000
+/** Poll for the patient's own verified status. Not a wait-time calculation. */
+export const WAIT_POLL_MS = 15_000

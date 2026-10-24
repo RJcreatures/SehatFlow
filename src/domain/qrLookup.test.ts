@@ -51,4 +51,30 @@ describe("QR lookup tokens", () => {
       }),
     ).toBe("https://sahaay.example")
   })
+
+  it("accepts a configured host missing https and still builds a valid QR URL", () => {
+    expect(
+      resolvePublicAppOrigin({
+        configured: "sahaayopd.rjcreatures.workers.dev",
+        windowOrigin: "http://localhost:5174",
+      }),
+    ).toBe("https://sahaayopd.rjcreatures.workers.dev")
+
+    const url = buildQrScanUrl(
+      "sahaayopd.rjcreatures.workers.dev",
+      "Abcdefghijklmnopqrstuvwxyz012345",
+    )
+    expect(url).toBe(
+      "https://sahaayopd.rjcreatures.workers.dev/my-turn?q=Abcdefghijklmnopqrstuvwxyz012345",
+    )
+  })
+
+  it("falls back when the configured public URL is not a usable origin", () => {
+    expect(
+      resolvePublicAppOrigin({
+        configured: "://bad",
+        windowOrigin: "http://localhost:5174",
+      }),
+    ).toBe("http://localhost:5174")
+  })
 })

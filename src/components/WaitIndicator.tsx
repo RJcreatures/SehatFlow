@@ -2,6 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { Link, useLocation } from "react-router"
 import { formatAboutWaitMinutes } from "../domain/queue.ts"
 import {
+  localizedDepartmentName,
+  localizedRoomFloor,
+} from "../domain/departmentLabels.ts"
+import {
   reconcileWaitDisplay,
   WAIT_POLL_MS,
   type WaitDisplayModel,
@@ -13,7 +17,10 @@ import {
 } from "../lib/supabase/client.ts"
 import { getMyTurn, type MyTurnResponse } from "../lib/supabase/patientApi.ts"
 import { loadSlip } from "../lib/slipStorage.ts"
-import { useMessages } from "../preferences/usePreferences.ts"
+import { useAssistantContext } from "../preferences/AssistantContext.tsx"
+import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
+import { QueueAlertsBridge } from "./QueueAlertsBridge.tsx"
+import type { QueueAlertSnapshot } from "../domain/queueAlerts.ts"
 
 function shouldShowOnPath(pathname: string): boolean {
   if (pathname.startsWith("/staff") || pathname === "/board") {
@@ -27,7 +34,9 @@ function shouldShowOnPath(pathname: string): boolean {
 
 export function WaitIndicator() {
   const messages = useMessages()
+  const { preferences } = usePreferences()
   const { pathname } = useLocation()
+  const { setTokenContext, setLiveQueue } = useAssistantContext()
   const supabaseState = readSupabaseState(import.meta.env)
   const client = getSupabaseClient()
   const snapshotRef = useRef<WaitServerSnapshot | null>(null)
@@ -36,6 +45,10 @@ export function WaitIndicator() {
   const [model, setModel] = useState<WaitDisplayModel | null>(null)
   const [updatedLabel, setUpdatedLabel] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [stale, setStale] = useState(false)
+  const [alertSnapshot, setAlertSnapshot] = useState<QueueAlertSnapshot | null>(
+    null,
+  )
 
   const applyLocalCountdown = useCallback(() => {
     const current = snapshotRef.current
@@ -61,16 +74,21 @@ export function WaitIndicator() {
     if (!slip || supabaseState.status !== "ready" || !client) {
       snapshotRef.current = null
       setModel(null)
+      setAlertSnapshot(null)
+      setLiveQueue(null)
       return
     }
 
-    const { data, error: lookupError } = await getMyTurn(client, {
-      token_code: slip.token_code,
-      access_code: slip.access_code,
-    })
+    const body =
+      slip.qr_token && slip.qr_token.length > 0
+        ? { qr_token: slip.qr_token }
+        : { token_code: slip.token_code, access_code: slip.access_code }
+
+    const { data, error: lookupError } = await getMyTurn(client, body)
 
     if (lookupError || !data || (typeof data === "object" && "error" in data)) {
       setError(messages.waitRefreshError)
+      setStale(true)
       return
     }
 
@@ -97,9 +115,50 @@ export function WaitIndicator() {
     baselineRef.current = result.baselineMinutes
     overdueRefreshRef.current = result.model.phase === "estimate_overdue"
     setModel(result.model)
+    setAlertSnapshot({
+      tokenCode: payload.token_code,
+      status: payload.status,
+      patientsAhead: payload.patients_ahead,
+    })
+    setLiveQueue({
+      token_code: payload.token_code,
+      display_minutes: result.model.displayMinutes,
+      patients_ahead: payload.patients_ahead,
+      status: payload.status,
+    })
+    const places = localizedRoomFloor(
+      preferences.language,
+      payload,
+      messages.notAvailable,
+    )
+    setTokenContext({
+      token_code: payload.token_code,
+      department_name: localizedDepartmentName(
+        messages,
+        preferences.language,
+        {
+          code: payload.department_code,
+          name_en: payload.department_name_en,
+          name_hi: payload.department_name_hi,
+        },
+      ),
+      room: places.room,
+      floor: places.floor,
+      status: payload.status,
+      estimated_wait_minutes: result.model.displayMinutes,
+      patients_ahead: payload.patients_ahead,
+    })
     setError(null)
+    setStale(false)
     setUpdatedLabel(new Date().toLocaleTimeString())
-  }, [client, messages.waitRefreshError, supabaseState.status])
+  }, [
+    client,
+    messages,
+    preferences.language,
+    setLiveQueue,
+    setTokenContext,
+    supabaseState.status,
+  ])
 
   const showChrome = shouldShowOnPath(pathname) && loadSlip() !== null
 
@@ -142,8 +201,12 @@ export function WaitIndicator() {
     }
   }, [model, refresh])
 
-  if (!showChrome || !model) {
-    return null
+  if (!showChrome) {
+    return <QueueAlertsBridge snapshot={null} />
+  }
+
+  if (!model) {
+    return <QueueAlertsBridge snapshot={alertSnapshot} />
   }
 
   const waitText =
@@ -152,6 +215,8 @@ export function WaitIndicator() {
       : formatAboutWaitMinutes(model.displayMinutes, messages.waitAboutTemplate)
 
   return (
+    <>
+    <QueueAlertsBridge snapshot={alertSnapshot} />
     <aside
       className="wait-indicator"
       aria-live="polite"
@@ -223,13 +288,20 @@ export function WaitIndicator() {
           <p className="wait-indicator-alert">{messages.waitUnavailableBanner}</p>
         ) : null}
 
-        {error ? <p className="form-error">{error}</p> : null}
+        {stale ? (
+          <p className="form-error" role="status">
+            {messages.waitStaleBanner}
+          </p>
+        ) : null}
+        {error && !stale ? <p className="form-error">{error}</p> : null}
         {updatedLabel ? (
           <p className="wait-indicator-updated">
             {messages.waitUpdated.replace("{time}", updatedLabel)}
+            {stale ? ` (${messages.waitEstimateNote})` : ""}
           </p>
         ) : null}
       </div>
     </aside>
+    </>
   )
 }

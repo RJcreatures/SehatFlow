@@ -1,8 +1,8 @@
 import { Link, Outlet, useLocation } from "react-router"
-import { appConfig } from "../config/hospital.ts"
 import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
+import { AppBrand } from "./AppBrand.tsx"
 import { EmergencyBar } from "./EmergencyBar.tsx"
-import { LanguageSwitch } from "./LanguageSwitch.tsx"
+import { GlobalAssistant } from "./GlobalAssistant.tsx"
 import { OnboardingFlow } from "./OnboardingFlow.tsx"
 import { PatientBottomNav } from "./PatientBottomNav.tsx"
 import { WaitIndicator } from "./WaitIndicator.tsx"
@@ -11,14 +11,18 @@ export function PatientLayout() {
   const messages = useMessages()
   const { preferences } = usePreferences()
   const { pathname } = useLocation()
-  const showOnboarding = !preferences.onboardingCompleted
+  const onboardingIncomplete = !preferences.onboardingCompleted
+  const onEmergency = pathname === "/emergency"
+  // Emergency must stay reachable before onboarding/registration completes.
+  const showOnboarding = onboardingIncomplete && !onEmergency
+  const showPatientChrome = !showOnboarding && !onEmergency
 
   return (
     <div
       className={
-        showOnboarding
-          ? "app-shell"
-          : "app-shell app-shell-with-bottom-nav app-shell-with-wait"
+        showPatientChrome
+          ? "app-shell app-shell-with-bottom-nav app-shell-with-wait"
+          : "app-shell"
       }
     >
       <a className="skip-link" href="#main">
@@ -26,16 +30,12 @@ export function PatientLayout() {
       </a>
       <EmergencyBar />
       <header className="topbar">
-        <div className="brand-block">
-          <Link className="brand" to="/">
-            {appConfig.name}
-          </Link>
-          <p className="hospital" lang={preferences.language}>
-            {messages.hospitalName}
-          </p>
-        </div>
+        <AppBrand
+          to="/"
+          subtitle={messages.hospitalName}
+          subtitleLang={preferences.language}
+        />
         <div className="topbar-actions">
-          {showOnboarding ? null : <LanguageSwitch />}
           {showOnboarding ? null : (
             <Link className="choice" to="/settings">
               {messages.settings}
@@ -43,11 +43,12 @@ export function PatientLayout() {
           )}
         </div>
       </header>
-      {showOnboarding || pathname === "/emergency" ? null : <WaitIndicator />}
+      {showPatientChrome ? <WaitIndicator /> : null}
       <main id="main" className="main">
         {showOnboarding ? <OnboardingFlow /> : <Outlet />}
       </main>
-      {showOnboarding || pathname === "/emergency" ? null : <PatientBottomNav />}
+      {showPatientChrome ? <PatientBottomNav /> : null}
+      <GlobalAssistant />
     </div>
   )
 }

@@ -1,14 +1,26 @@
-import { useEffect, useState, type FormEvent } from "react"
-import { useNavigate } from "react-router"
+import { useEffect, useRef, useState, type FormEvent } from "react"
+import { Link, useNavigate } from "react-router"
 import { PageHeading } from "../components/PageHeading.tsx"
+import {
+  loadIdempotentRegistration,
+  saveIdempotentRegistration,
+} from "../domain/agent/registrationDraft.ts"
+import {
+  isRegisterPatientResponse,
+  mapRegisterFailure,
+  withRegisterTimeout,
+} from "../domain/registerOutcome.ts"
+import { localizedDepartmentName } from "../domain/departmentLabels.ts"
 import { validateRegistrationInput } from "../domain/registration.ts"
 import {
   getSupabaseClient,
   readSupabaseState,
 } from "../lib/supabase/client.ts"
-import { supabaseErrorMessage } from "../lib/supabase/errors.ts"
-import { registerPatient } from "../lib/supabase/patientApi.ts"
-import { saveSlip } from "../lib/slipStorage.ts"
+import {
+  registerPatient,
+  type RegisterPatientResponse,
+} from "../lib/supabase/patientApi.ts"
+import { loadSlip, saveSlip } from "../lib/slipStorage.ts"
 import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
 
 type DepartmentOption = {
@@ -23,6 +35,10 @@ export function RegisterPage() {
   const navigate = useNavigate()
   const supabaseState = readSupabaseState(import.meta.env)
   const client = getSupabaseClient()
+  const idempotencyKeyRef = useRef(
+    crypto.randomUUID().replaceAll("-", ""),
+  )
+  const existingSlip = loadSlip()
   const [departments, setDepartments] = useState<DepartmentOption[]>([])
   const [displayName, setDisplayName] = useState("")
   const [ageText, setAgeText] = useState("")
@@ -33,6 +49,7 @@ export function RegisterPage() {
   )
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showRecovery, setShowRecovery] = useState(false)
 
   useEffect(() => {
     if (supabaseState.status !== "ready" || !client) {
@@ -50,7 +67,7 @@ export function RegisterPage() {
         return
       }
       if (loadError) {
-        setError(supabaseErrorMessage(loadError, messages.registerLoadError))
+        setError(messages.registerLoadError)
         setLoadingDepartments(false)
         return
       }
@@ -64,9 +81,19 @@ export function RegisterPage() {
     }
   }, [client, messages.registerLoadError, supabaseState.status])
 
+  function finishWithSlip(data: RegisterPatientResponse) {
+    saveSlip(data)
+    saveIdempotentRegistration(idempotencyKeyRef.current, data)
+    navigate("/slip", { replace: true, state: { slip: data } })
+  }
+
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (submitting) {
+      return
+    }
     setError(null)
+    setShowRecovery(false)
 
     if (supabaseState.status === "unconfigured") {
       setError(messages.backendUnconfigured)
@@ -78,6 +105,18 @@ export function RegisterPage() {
     }
     if (!client) {
       setError(messages.backendUnconfigured)
+      return
+    }
+
+    const cached = loadIdempotentRegistration(idempotencyKeyRef.current)
+    if (cached && isRegisterPatientResponse(cached.response)) {
+      finishWithSlip(cached.response)
+      return
+    }
+
+    const existing = loadSlip()
+    if (existing) {
+      navigate("/slip", { replace: true, state: { slip: existing } })
       return
     }
 
@@ -93,36 +132,79 @@ export function RegisterPage() {
     }
 
     setSubmitting(true)
-    const { data, error: registerError } = await registerPatient(client, {
-      display_name: parsed.value.displayName,
-      age: parsed.value.age,
-      gender: parsed.value.gender,
-      department_code: parsed.value.departmentCode,
-    })
+    const raced = await withRegisterTimeout(
+      registerPatient(client, {
+        display_name: parsed.value.displayName,
+        age: parsed.value.age,
+        gender: parsed.value.gender,
+        department_code: parsed.value.departmentCode,
+      }),
+    )
     setSubmitting(false)
 
+    if (!raced.ok) {
+      const recovered = loadSlip()
+      if (recovered) {
+        navigate("/slip", { replace: true, state: { slip: recovered } })
+        return
+      }
+      const again = loadIdempotentRegistration(idempotencyKeyRef.current)
+      if (again && isRegisterPatientResponse(again.response)) {
+        finishWithSlip(again.response)
+        return
+      }
+      const mapped = mapRegisterFailure({
+        invokeError: null,
+        timedOut: true,
+        messages,
+      })
+      setError(mapped.message)
+      setShowRecovery(true)
+      return
+    }
+
+    const { data, error: registerError } = raced.value
+
     if (registerError || !data) {
-      setError(
-        supabaseErrorMessage(registerError, messages.registerFailed),
-      )
+      const mapped = mapRegisterFailure({
+        invokeError: registerError,
+        messages,
+      })
+      setError(mapped.message)
+      setShowRecovery(mapped.kind === "network" || mapped.kind === "uncertain")
       return
     }
 
     if (typeof data === "object" && data !== null && "error" in data) {
-      setError(String((data as { error: string }).error))
+      const mapped = mapRegisterFailure({
+        invokeError: null,
+        bodyError: String((data as { error: string }).error),
+        messages,
+      })
+      setError(mapped.message)
       return
     }
 
-    saveSlip(data)
-    navigate("/slip", { replace: true, state: { slip: data } })
+    if (!isRegisterPatientResponse(data)) {
+      setError(messages.registerFailed)
+      return
+    }
+
+    finishWithSlip(data)
   }
 
   return (
     <>
       <PageHeading title={messages.registerTitle}>
         <p>{messages.registerDemoOnly}</p>
-        <p>{messages.registerNoPhone}</p>
       </PageHeading>
+
+      {existingSlip ? (
+        <p className="panel" role="status">
+          {messages.registerAlreadyHaveSlip}{" "}
+          <Link to="/slip">{messages.mySlip}</Link>
+        </p>
+      ) : null}
 
       {supabaseState.status === "unconfigured" ? (
         <p className="form-error" role="status">
@@ -168,7 +250,6 @@ export function RegisterPage() {
             <option value="female">{messages.genderFemale}</option>
             <option value="male">{messages.genderMale}</option>
             <option value="other">{messages.genderOther}</option>
-            <option value="undisclosed">{messages.genderUndisclosed}</option>
           </select>
         </label>
         <label className="field">
@@ -185,9 +266,11 @@ export function RegisterPage() {
             ) : (
               departments.map((department) => (
                 <option key={department.code} value={department.code}>
-                  {preferences.language === "hi"
-                    ? department.name_hi
-                    : department.name_en}
+                  {localizedDepartmentName(
+                    messages,
+                    preferences.language,
+                    department,
+                  )}
                 </option>
               ))
             )}
@@ -197,6 +280,16 @@ export function RegisterPage() {
           <p className="form-error" role="alert">
             {error}
           </p>
+        ) : null}
+        {showRecovery ? (
+          <div className="choice-row staff-actions">
+            <Link className="button button-secondary" to="/slip">
+              {messages.mySlip}
+            </Link>
+            <Link className="button button-secondary" to="/my-turn">
+              {messages.myTurn}
+            </Link>
+          </div>
         ) : null}
         <button
           type="submit"
@@ -210,7 +303,7 @@ export function RegisterPage() {
         >
           {submitting ? messages.registerSubmitting : messages.registerSubmit}
         </button>
-        <p>{messages.registerEstimateHint}</p>
+        <p className="privacy-note">{messages.registerEstimateHint}</p>
       </form>
     </>
   )

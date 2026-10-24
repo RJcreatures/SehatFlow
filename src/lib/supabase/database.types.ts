@@ -129,6 +129,16 @@ type UrgentFlagRow = {
   acknowledged_at: string | null
   acknowledged_by: string | null
   is_demo: boolean
+  request_key: string | null
+}
+
+export type UrgentHelpRequestResult = {
+  id: string
+  status: UrgentStatus
+  created_at: string
+  acknowledged_at: string | null
+  department_id: string | null
+  reused: boolean
 }
 
 type StaffMemberRow = {
@@ -301,6 +311,10 @@ export type Database = {
       acknowledge_urgent: {
         Args: { p_flag_id: string }
         Returns: UrgentFlagRow
+      }
+      request_urgent_help: {
+        Args: { p_request_key: string; p_department_code?: string | null }
+        Returns: UrgentHelpRequestResult
       }
       set_demo_clock: {
         Args: { p_scale: number }

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router"
-import { LanguageSwitch } from "../components/LanguageSwitch.tsx"
+import { AppBrand } from "../components/AppBrand.tsx"
 import { PageHeading } from "../components/PageHeading.tsx"
-import { appConfig } from "../config/hospital.ts"
+import { localizedDepartmentName } from "../domain/departmentLabels.ts"
 import { formatAboutWaitMinutes } from "../domain/queue.ts"
 import {
   getSupabaseClient,
@@ -24,6 +24,7 @@ export function BoardPage() {
   const [rows, setRows] = useState<BoardSnapshotRow[]>([])
   const [error, setError] = useState<string | null>(null)
   const [updatedAt, setUpdatedAt] = useState<string | null>(null)
+  const [stale, setStale] = useState(false)
   const [loading, setLoading] = useState(backendReady)
 
   useEffect(() => {
@@ -41,11 +42,13 @@ export function BoardPage() {
       }
       if (loadError) {
         setError(supabaseErrorMessage(loadError, messages.boardLoadError))
+        setStale(true)
         setLoading(false)
         return
       }
       setRows((data as BoardSnapshotRow[]) ?? [])
       setError(null)
+      setStale(false)
       setUpdatedAt(new Date().toISOString())
       setLoading(false)
     }
@@ -61,20 +64,14 @@ export function BoardPage() {
     }
   }, [backendReady, client, messages.boardLoadError])
 
-  const hindi = preferences.language === "hi"
-
   return (
     <div className="app-shell board-shell">
       <a className="skip-link" href="#main">
         {messages.skipToContent}
       </a>
       <header className="topbar">
-        <div className="brand-block">
-          <p className="brand">{appConfig.name}</p>
-          <p className="hospital">{messages.hospitalName}</p>
-        </div>
+        <AppBrand subtitle={messages.hospitalName} />
         <div className="topbar-actions">
-          <LanguageSwitch />
           <Link className="choice" to="/">
             {messages.home}
           </Link>
@@ -96,7 +93,12 @@ export function BoardPage() {
           {backendReady && loading ? (
             <p role="status">{messages.boardLoading}</p>
           ) : null}
-          {error ? (
+          {stale ? (
+            <p className="form-error" role="status">
+              {messages.boardStaleBanner}
+            </p>
+          ) : null}
+          {error && !stale ? (
             <p className="form-error" role="alert">
               {error}
             </p>
@@ -114,9 +116,23 @@ export function BoardPage() {
 
         <div className="board-grid">
           {rows.map((row) => {
-            const name = hindi ? row.department_name_hi : row.department_name_en
-            const room = hindi ? row.room_hi : row.room_en
-            const floor = hindi ? row.floor_hi : row.floor_en
+            const name = localizedDepartmentName(
+              messages,
+              preferences.language,
+              {
+                code: row.department_code,
+                name_en: row.department_name_en,
+                name_hi: row.department_name_hi,
+              },
+            )
+            const room =
+              preferences.language === "hi"
+                ? row.room_hi || row.room_en
+                : row.room_en || row.room_hi
+            const floor =
+              preferences.language === "hi"
+                ? row.floor_hi || row.floor_en
+                : row.floor_en || row.floor_hi
             const waiting = row.next_waiting_tokens ?? []
             return (
               <section

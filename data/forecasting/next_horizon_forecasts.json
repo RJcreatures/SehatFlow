@@ -1,0 +1,1346 @@
+[
+  {
+    "timestamp_utc": "2026-10-24T00:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 0,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T00:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 0,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T00:00:00Z",
+    "department_code": "womens_health",
+    "hour": 0,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T00:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 0,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T00:00:00Z",
+    "department_code": "ent",
+    "hour": 0,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T00:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 0,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T00:00:00Z",
+    "department_code": "dermatology",
+    "hour": 0,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T01:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 1,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T01:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 1,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T01:00:00Z",
+    "department_code": "womens_health",
+    "hour": 1,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T01:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 1,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T01:00:00Z",
+    "department_code": "ent",
+    "hour": 1,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T01:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 1,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T01:00:00Z",
+    "department_code": "dermatology",
+    "hour": 1,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T02:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 2,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T02:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 2,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T02:00:00Z",
+    "department_code": "womens_health",
+    "hour": 2,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T02:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 2,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T02:00:00Z",
+    "department_code": "ent",
+    "hour": 2,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T02:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 2,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T02:00:00Z",
+    "department_code": "dermatology",
+    "hour": 2,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T03:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 3,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T03:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 3,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T03:00:00Z",
+    "department_code": "womens_health",
+    "hour": 3,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T03:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 3,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T03:00:00Z",
+    "department_code": "ent",
+    "hour": 3,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T03:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 3,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T03:00:00Z",
+    "department_code": "dermatology",
+    "hour": 3,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T04:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 4,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T04:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 4,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T04:00:00Z",
+    "department_code": "womens_health",
+    "hour": 4,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T04:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 4,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T04:00:00Z",
+    "department_code": "ent",
+    "hour": 4,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T04:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 4,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T04:00:00Z",
+    "department_code": "dermatology",
+    "hour": 4,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T05:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 5,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T05:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 5,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T05:00:00Z",
+    "department_code": "womens_health",
+    "hour": 5,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T05:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 5,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T05:00:00Z",
+    "department_code": "ent",
+    "hour": 5,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T05:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 5,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T05:00:00Z",
+    "department_code": "dermatology",
+    "hour": 5,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T06:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 6,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T06:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 6,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T06:00:00Z",
+    "department_code": "womens_health",
+    "hour": 6,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T06:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 6,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T06:00:00Z",
+    "department_code": "ent",
+    "hour": 6,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T06:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 6,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T06:00:00Z",
+    "department_code": "dermatology",
+    "hour": 6,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T07:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 7,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T07:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 7,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T07:00:00Z",
+    "department_code": "womens_health",
+    "hour": 7,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T07:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 7,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T07:00:00Z",
+    "department_code": "ent",
+    "hour": 7,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T07:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 7,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T07:00:00Z",
+    "department_code": "dermatology",
+    "hour": 7,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T08:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 8,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 5
+  },
+  {
+    "timestamp_utc": "2026-10-24T08:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 8,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T08:00:00Z",
+    "department_code": "womens_health",
+    "hour": 8,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T08:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 8,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T08:00:00Z",
+    "department_code": "ent",
+    "hour": 8,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T08:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 8,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T08:00:00Z",
+    "department_code": "dermatology",
+    "hour": 8,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T09:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 9,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 5
+  },
+  {
+    "timestamp_utc": "2026-10-24T09:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 9,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 4
+  },
+  {
+    "timestamp_utc": "2026-10-24T09:00:00Z",
+    "department_code": "womens_health",
+    "hour": 9,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T09:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 9,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T09:00:00Z",
+    "department_code": "ent",
+    "hour": 9,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T09:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 9,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T09:00:00Z",
+    "department_code": "dermatology",
+    "hour": 9,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T10:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 10,
+    "dow": 5,
+    "model_forecast": 5,
+    "baseline_forecast": 5
+  },
+  {
+    "timestamp_utc": "2026-10-24T10:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 10,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 4
+  },
+  {
+    "timestamp_utc": "2026-10-24T10:00:00Z",
+    "department_code": "womens_health",
+    "hour": 10,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T10:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 10,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T10:00:00Z",
+    "department_code": "ent",
+    "hour": 10,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T10:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 10,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T10:00:00Z",
+    "department_code": "dermatology",
+    "hour": 10,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T11:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 11,
+    "dow": 5,
+    "model_forecast": 5,
+    "baseline_forecast": 6
+  },
+  {
+    "timestamp_utc": "2026-10-24T11:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 11,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 6
+  },
+  {
+    "timestamp_utc": "2026-10-24T11:00:00Z",
+    "department_code": "womens_health",
+    "hour": 11,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 4
+  },
+  {
+    "timestamp_utc": "2026-10-24T11:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 11,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T11:00:00Z",
+    "department_code": "ent",
+    "hour": 11,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T11:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 11,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T11:00:00Z",
+    "department_code": "dermatology",
+    "hour": 11,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T12:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 12,
+    "dow": 5,
+    "model_forecast": 5,
+    "baseline_forecast": 7
+  },
+  {
+    "timestamp_utc": "2026-10-24T12:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 12,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 5
+  },
+  {
+    "timestamp_utc": "2026-10-24T12:00:00Z",
+    "department_code": "womens_health",
+    "hour": 12,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T12:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 12,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T12:00:00Z",
+    "department_code": "ent",
+    "hour": 12,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T12:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 12,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T12:00:00Z",
+    "department_code": "dermatology",
+    "hour": 12,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T13:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 13,
+    "dow": 5,
+    "model_forecast": 5,
+    "baseline_forecast": 7
+  },
+  {
+    "timestamp_utc": "2026-10-24T13:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 13,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 4
+  },
+  {
+    "timestamp_utc": "2026-10-24T13:00:00Z",
+    "department_code": "womens_health",
+    "hour": 13,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T13:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 13,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T13:00:00Z",
+    "department_code": "ent",
+    "hour": 13,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T13:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 13,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T13:00:00Z",
+    "department_code": "dermatology",
+    "hour": 13,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T14:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 14,
+    "dow": 5,
+    "model_forecast": 5,
+    "baseline_forecast": 5
+  },
+  {
+    "timestamp_utc": "2026-10-24T14:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 14,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T14:00:00Z",
+    "department_code": "womens_health",
+    "hour": 14,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 4
+  },
+  {
+    "timestamp_utc": "2026-10-24T14:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 14,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 4
+  },
+  {
+    "timestamp_utc": "2026-10-24T14:00:00Z",
+    "department_code": "ent",
+    "hour": 14,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T14:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 14,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T14:00:00Z",
+    "department_code": "dermatology",
+    "hour": 14,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T15:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 15,
+    "dow": 5,
+    "model_forecast": 5,
+    "baseline_forecast": 5
+  },
+  {
+    "timestamp_utc": "2026-10-24T15:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 15,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 4
+  },
+  {
+    "timestamp_utc": "2026-10-24T15:00:00Z",
+    "department_code": "womens_health",
+    "hour": 15,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T15:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 15,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 4
+  },
+  {
+    "timestamp_utc": "2026-10-24T15:00:00Z",
+    "department_code": "ent",
+    "hour": 15,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T15:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 15,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T15:00:00Z",
+    "department_code": "dermatology",
+    "hour": 15,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T16:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 16,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 6
+  },
+  {
+    "timestamp_utc": "2026-10-24T16:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 16,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T16:00:00Z",
+    "department_code": "womens_health",
+    "hour": 16,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T16:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 16,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T16:00:00Z",
+    "department_code": "ent",
+    "hour": 16,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T16:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 16,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T16:00:00Z",
+    "department_code": "dermatology",
+    "hour": 16,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 2
+  },
+  {
+    "timestamp_utc": "2026-10-24T17:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 17,
+    "dow": 5,
+    "model_forecast": 4,
+    "baseline_forecast": 4
+  },
+  {
+    "timestamp_utc": "2026-10-24T17:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 17,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T17:00:00Z",
+    "department_code": "womens_health",
+    "hour": 17,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T17:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 17,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 3
+  },
+  {
+    "timestamp_utc": "2026-10-24T17:00:00Z",
+    "department_code": "ent",
+    "hour": 17,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T17:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 17,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T17:00:00Z",
+    "department_code": "dermatology",
+    "hour": 17,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T18:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 18,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T18:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 18,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T18:00:00Z",
+    "department_code": "womens_health",
+    "hour": 18,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T18:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 18,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T18:00:00Z",
+    "department_code": "ent",
+    "hour": 18,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T18:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 18,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T18:00:00Z",
+    "department_code": "dermatology",
+    "hour": 18,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T19:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 19,
+    "dow": 5,
+    "model_forecast": 3,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T19:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 19,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T19:00:00Z",
+    "department_code": "womens_health",
+    "hour": 19,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T19:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 19,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T19:00:00Z",
+    "department_code": "ent",
+    "hour": 19,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T19:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 19,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T19:00:00Z",
+    "department_code": "dermatology",
+    "hour": 19,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 1
+  },
+  {
+    "timestamp_utc": "2026-10-24T20:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 20,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T20:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 20,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T20:00:00Z",
+    "department_code": "womens_health",
+    "hour": 20,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T20:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 20,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T20:00:00Z",
+    "department_code": "ent",
+    "hour": 20,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T20:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 20,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T20:00:00Z",
+    "department_code": "dermatology",
+    "hour": 20,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T21:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 21,
+    "dow": 5,
+    "model_forecast": 2,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T21:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 21,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T21:00:00Z",
+    "department_code": "womens_health",
+    "hour": 21,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T21:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 21,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T21:00:00Z",
+    "department_code": "ent",
+    "hour": 21,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T21:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 21,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T21:00:00Z",
+    "department_code": "dermatology",
+    "hour": 21,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T22:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 22,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T22:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 22,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T22:00:00Z",
+    "department_code": "womens_health",
+    "hour": 22,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T22:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 22,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T22:00:00Z",
+    "department_code": "ent",
+    "hour": 22,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T22:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 22,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T22:00:00Z",
+    "department_code": "dermatology",
+    "hour": 22,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T23:00:00Z",
+    "department_code": "general_medicine",
+    "hour": 23,
+    "dow": 5,
+    "model_forecast": 1,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T23:00:00Z",
+    "department_code": "pediatrics",
+    "hour": 23,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T23:00:00Z",
+    "department_code": "womens_health",
+    "hour": 23,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T23:00:00Z",
+    "department_code": "orthopedics",
+    "hour": 23,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T23:00:00Z",
+    "department_code": "ent",
+    "hour": 23,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T23:00:00Z",
+    "department_code": "ophthalmology",
+    "hour": 23,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  },
+  {
+    "timestamp_utc": "2026-10-24T23:00:00Z",
+    "department_code": "dermatology",
+    "hour": 23,
+    "dow": 5,
+    "model_forecast": 0,
+    "baseline_forecast": 0
+  }
+]

@@ -1,10 +1,8 @@
 import { Link, NavLink, Outlet } from "react-router"
-import { appConfig } from "../config/hospital.ts"
 import { useMessages } from "../preferences/usePreferences.ts"
 import { StaffAuthProvider } from "../staff/StaffAuthProvider.tsx"
 import { useStaffAuth } from "../staff/useStaffAuth.ts"
-import { LanguageSwitch } from "./LanguageSwitch.tsx"
-
+import { AppBrand } from "./AppBrand.tsx"
 function StaffChrome() {
   const messages = useMessages()
   const auth = useStaffAuth()
@@ -15,14 +13,8 @@ function StaffChrome() {
         {messages.skipToContent}
       </a>
       <header className="topbar">
-        <div className="brand-block">
-          <Link className="brand" to="/staff">
-            {appConfig.name}
-          </Link>
-          <p className="hospital">{messages.staffTitle}</p>
-        </div>
+        <AppBrand to="/staff" subtitle={messages.staffTitle} />
         <div className="topbar-actions">
-          <LanguageSwitch />
           {auth.status === "signed_in" ? (
             <button
               type="button"

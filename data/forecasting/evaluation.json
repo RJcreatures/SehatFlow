@@ -1,0 +1,116 @@
+{
+  "label": "Held-out evaluation on synthetic data only",
+  "holdout_start_utc": "2026-10-10T00:00:00Z",
+  "holdout_end_utc": "2026-10-23T23:00:00Z",
+  "train_rows": 17808,
+  "test_rows": 2352,
+  "units": "patients per hour",
+  "lower_error_is_better": true,
+  "model": {
+    "mae": 1.1713435374149659,
+    "rmse": 1.8024218401350773,
+    "n": 2352
+  },
+  "baseline": {
+    "mae": 0.9111394557823129,
+    "rmse": 1.5450986803349451,
+    "n": 2352
+  },
+  "mae_improvement_vs_baseline": -0.26020408163265296,
+  "rmse_improvement_vs_baseline": -0.2573231598001322,
+  "model_beats_baseline_on_mae": false,
+  "per_department": {
+    "general_medicine": {
+      "model": {
+        "mae": 2.1011904761904763,
+        "rmse": 2.74620950888068,
+        "n": 336
+      },
+      "baseline": {
+        "mae": 1.3452380952380953,
+        "rmse": 2.1157009420498154,
+        "n": 336
+      },
+      "n": 336
+    },
+    "pediatrics": {
+      "model": {
+        "mae": 1.4166666666666667,
+        "rmse": 1.9910514092523364,
+        "n": 336
+      },
+      "baseline": {
+        "mae": 0.9702380952380952,
+        "rmse": 1.5905225257008795,
+        "n": 336
+      },
+      "n": 336
+    },
+    "womens_health": {
+      "model": {
+        "mae": 1.0595238095238095,
+        "rmse": 1.6017103953200125,
+        "n": 336
+      },
+      "baseline": {
+        "mae": 0.9464285714285714,
+        "rmse": 1.5197117521174235,
+        "n": 336
+      },
+      "n": 336
+    },
+    "orthopedics": {
+      "model": {
+        "mae": 1.1101190476190477,
+        "rmse": 1.7836893280634998,
+        "n": 336
+      },
+      "baseline": {
+        "mae": 0.9732142857142857,
+        "rmse": 1.6964598994601052,
+        "n": 336
+      },
+      "n": 336
+    },
+    "ent": {
+      "model": {
+        "mae": 0.8065476190476191,
+        "rmse": 1.328488220640647,
+        "n": 336
+      },
+      "baseline": {
+        "mae": 0.7351190476190477,
+        "rmse": 1.308170296180709,
+        "n": 336
+      },
+      "n": 336
+    },
+    "ophthalmology": {
+      "model": {
+        "mae": 0.9107142857142857,
+        "rmse": 1.439245834257849,
+        "n": 336
+      },
+      "baseline": {
+        "mae": 0.7738095238095238,
+        "rmse": 1.2724180205607036,
+        "n": 336
+      },
+      "n": 336
+    },
+    "dermatology": {
+      "model": {
+        "mae": 0.7946428571428571,
+        "rmse": 1.2852181582461844,
+        "n": 336
+      },
+      "baseline": {
+        "mae": 0.6339285714285714,
+        "rmse": 1.0897247358851685,
+        "n": 336
+      },
+      "n": 336
+    }
+  },
+  "note": "Positive mae_improvement_vs_baseline means the model MAE is lower than the baseline."
+}

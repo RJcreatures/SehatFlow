@@ -8,12 +8,18 @@ import {
 } from "./patientNav.ts"
 
 describe("patient bottom navigation", () => {
-  it("exposes core patient routes including home, find, my turn, and settings", () => {
+  it("exposes core patient routes including home, find, Ask AI, and settings", () => {
     expect(patientNavItems.map((item) => item.to)).toEqual([
       "/",
       "/find",
-      "/my-turn",
+      "/ask",
       "/settings",
+    ])
+    expect(patientNavItems.map((item) => item.id)).toEqual([
+      "home",
+      "find",
+      "askAi",
+      "settings",
     ])
   })
 
@@ -25,6 +31,7 @@ describe("patient bottom navigation", () => {
   it("hides the bar on staff and board routes", () => {
     expect(shouldShowPatientBottomNav("/")).toBe(true)
     expect(shouldShowPatientBottomNav("/find")).toBe(true)
+    expect(shouldShowPatientBottomNav("/visit-days")).toBe(true)
     expect(shouldShowPatientBottomNav("/staff")).toBe(false)
     expect(shouldShowPatientBottomNav("/staff/forecast")).toBe(false)
     expect(shouldShowPatientBottomNav("/board")).toBe(false)

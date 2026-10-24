@@ -31,11 +31,38 @@ export function normalizeAppOrigin(raw: string): string {
 }
 
 /**
+ * Coerce a configured host or URL into a usable http(s) origin.
+ * Accepts values missing a scheme (common .env mistake) by assuming https.
+ * Returns null when the value cannot form a valid URL base.
+ */
+export function coerceHttpOrigin(raw: string): string | null {
+  const trimmed = normalizeAppOrigin(raw)
+  if (!trimmed) {
+    return null
+  }
+  const withScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(trimmed)
+    ? trimmed
+    : `https://${trimmed}`
+  try {
+    const url = new URL(withScheme)
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return null
+    }
+    return normalizeAppOrigin(url.origin)
+  } catch {
+    return null
+  }
+}
+
+/**
  * Build the scannable My Turn URL. Only the opaque QR token is included —
  * never the access code or personal data.
  */
 export function buildQrScanUrl(appOrigin: string, qrToken: string): string {
-  const origin = normalizeAppOrigin(appOrigin)
+  const origin = coerceHttpOrigin(appOrigin)
+  if (!origin) {
+    throw new Error(`Invalid public app origin: ${appOrigin}`)
+  }
   const url = new URL("/my-turn", `${origin}/`)
   url.searchParams.set("q", qrToken)
   return url.toString()
@@ -47,10 +74,16 @@ export function resolvePublicAppOrigin(input: {
 }): string {
   const configured = input.configured?.trim()
   if (configured) {
-    return normalizeAppOrigin(configured)
+    const origin = coerceHttpOrigin(configured)
+    if (origin) {
+      return origin
+    }
   }
   if (input.windowOrigin) {
-    return normalizeAppOrigin(input.windowOrigin)
+    const origin = coerceHttpOrigin(input.windowOrigin)
+    if (origin) {
+      return origin
+    }
   }
   return "http://127.0.0.1:5173"
 }

@@ -1,3 +1,4 @@
+import { HelpRequestPanel } from "../components/HelpRequestPanel.tsx"
 import { PageHeading } from "../components/PageHeading.tsx"
 import { useMessages } from "../preferences/usePreferences.ts"
 
@@ -21,6 +22,7 @@ export function EmergencyPage() {
         <p className="emphasis">{messages.emergencyImmediate}</p>
         <p className="emphasis">{messages.emergencyLead}</p>
         <p className="emphasis">{messages.noToken}</p>
+        <p className="privacy-note">{messages.emergencyNotAdvice}</p>
       </PageHeading>
       <section className="panel panel-emergency" aria-labelledby="warning-signs">
         <h2 id="warning-signs">{messages.signsTitle}</h2>
@@ -35,19 +37,24 @@ export function EmergencyPage() {
         <div className="number-list">
           <a className="button button-emergency" href="tel:112">
             <span>
-              <span className="button-label">112</span>
+              <span className="button-label" dir="ltr">
+                112
+              </span>
               <span className="button-hint">{messages.number112Label}</span>
             </span>
           </a>
           <a className="button button-emergency" href="tel:108">
             <span>
-              <span className="button-label">108</span>
+              <span className="button-label" dir="ltr">
+                108
+              </span>
               <span className="button-hint">{messages.number108Label}</span>
             </span>
           </a>
         </div>
         <p className="emphasis">{messages.tellStaff}</p>
       </section>
+      <HelpRequestPanel />
     </>
   )
 }

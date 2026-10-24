@@ -8,6 +8,8 @@ export const defaultPreferences: Preferences = {
   contrast: "default",
   languageChosen: false,
   onboardingCompleted: false,
+  queueNotificationsEnabled: false,
+  simulatedCallEnabled: false,
 }
 
 function isTextSize(value: unknown): value is TextSize {
@@ -46,6 +48,8 @@ export function loadPreferences(): Preferences {
         : defaultPreferences.contrast,
       languageChosen,
       onboardingCompleted,
+      queueNotificationsEnabled: record.queueNotificationsEnabled === true,
+      simulatedCallEnabled: record.simulatedCallEnabled === true,
     }
   } catch {
     return defaultPreferences

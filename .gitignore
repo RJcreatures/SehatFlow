@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Phase 8 local Python env (artifacts under data/forecasting are committed)
+forecasting/.venv/
+
 .env
 .env.*
 !.env.example

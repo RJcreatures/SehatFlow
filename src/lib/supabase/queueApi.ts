@@ -63,6 +63,17 @@ export async function acknowledgeUrgent(client: AppSupabase, flagId: string) {
   return client.rpc("acknowledge_urgent", { p_flag_id: flagId })
 }
 
+export async function requestUrgentHelp(
+  client: AppSupabase,
+  requestKey: string,
+  departmentCode?: string | null,
+) {
+  return client.rpc("request_urgent_help", {
+    p_request_key: requestKey,
+    p_department_code: departmentCode ?? null,
+  })
+}
+
 export async function setDemoClock(client: AppSupabase, scale: 1 | 10) {
   return client.rpc("set_demo_clock", { p_scale: scale })
 }

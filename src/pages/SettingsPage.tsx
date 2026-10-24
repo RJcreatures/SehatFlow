@@ -1,5 +1,10 @@
+import { useState } from "react"
 import { readyLanguages } from "../i18n/index.ts"
 import { PageHeading } from "../components/PageHeading.tsx"
+import {
+  getNotificationSupport,
+  requestNotificationPermission,
+} from "../lib/browserNotifications.ts"
 import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
 import type { ContrastMode, TextSize } from "../preferences/types.ts"
 
@@ -10,8 +15,11 @@ export function SettingsPage() {
     setLanguage,
     setTextSize,
     setContrast,
+    setQueueNotificationsEnabled,
+    setSimulatedCallEnabled,
     resetOnboarding,
   } = usePreferences()
+  const [notifyNote, setNotifyNote] = useState<string | null>(null)
 
   const sizes: Array<{ id: TextSize; label: string }> = [
     { id: "md", label: messages.textMd },
@@ -22,6 +30,30 @@ export function SettingsPage() {
     { id: "default", label: messages.contrastDefault },
     { id: "high", label: messages.contrastHigh },
   ]
+
+  const notifySupport = getNotificationSupport()
+
+  async function enableNotifications() {
+    setNotifyNote(null)
+    const permission = await requestNotificationPermission()
+    if (permission === "unsupported") {
+      setNotifyNote(messages.notifyUnsupported)
+      setQueueNotificationsEnabled(false)
+      return
+    }
+    if (permission !== "granted") {
+      setNotifyNote(messages.notifyDenied)
+      setQueueNotificationsEnabled(false)
+      return
+    }
+    setQueueNotificationsEnabled(true)
+    setNotifyNote(messages.notifyEnabledConfirm)
+  }
+
+  function disableNotifications() {
+    setQueueNotificationsEnabled(false)
+    setNotifyNote(messages.notifyDisabledConfirm)
+  }
 
   return (
     <>
@@ -74,6 +106,51 @@ export function SettingsPage() {
             </label>
           ))}
         </fieldset>
+
+        <fieldset className="settings-group">
+          <legend>{messages.notifySettingsLegend}</legend>
+          <p>{messages.notifySettingsExplain}</p>
+          {!notifySupport.supported ? (
+            <p role="status">{messages.notifyUnsupported}</p>
+          ) : preferences.queueNotificationsEnabled ? (
+            <button
+              type="button"
+              className="button button-secondary"
+              onClick={disableNotifications}
+            >
+              {messages.notifyDisable}
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="button"
+              onClick={() => void enableNotifications()}
+            >
+              {messages.notifyEnable}
+            </button>
+          )}
+          {notifyNote ? (
+            <p role="status">{notifyNote}</p>
+          ) : null}
+        </fieldset>
+
+        <fieldset className="settings-group">
+          <legend>{messages.simCallSettingsLegend}</legend>
+          <p className="forecast-banner" role="status">
+            {messages.simCallDemoBanner}
+          </p>
+          <label className="radio-row">
+            <input
+              type="checkbox"
+              checked={preferences.simulatedCallEnabled}
+              onChange={(event) =>
+                setSimulatedCallEnabled(event.target.checked)
+              }
+            />
+            <span>{messages.simCallOptIn}</span>
+          </label>
+        </fieldset>
+
         <fieldset className="settings-group">
           <legend>{messages.onboardingResetLegend}</legend>
           <p>{messages.onboardingResetHint}</p>

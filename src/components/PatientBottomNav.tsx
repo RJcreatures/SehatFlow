@@ -7,6 +7,7 @@ import {
 import { loadSlip } from "../lib/slipStorage.ts"
 import { useMessages } from "../preferences/usePreferences.ts"
 import {
+  IconAsk,
   IconHome,
   IconPlace,
   IconSettings,
@@ -25,14 +26,14 @@ export function PatientBottomNav() {
   const labels = {
     home: messages.home,
     find: messages.findPlace,
-    myTurn: messages.myTurnNav,
+    askAi: messages.askAiNav,
     settings: messages.settings,
   } as const
 
   const icons = {
     home: IconHome,
     find: IconPlace,
-    myTurn: IconSlip,
+    askAi: IconAsk,
     settings: IconSettings,
   } as const
 

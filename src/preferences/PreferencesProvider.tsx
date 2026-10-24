@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react"
-import type { UiLanguage } from "../i18n/index.ts"
+import {
+  getHtmlLang,
+  getTextDirection,
+  type UiLanguage,
+} from "../i18n/index.ts"
 import { PreferencesContext } from "./context.ts"
 import { loadPreferences, savePreferences } from "./storage.ts"
 import type { ContrastMode, Preferences, TextSize } from "./types.ts"
@@ -9,7 +13,8 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const root = document.documentElement
-    root.lang = preferences.language
+    root.lang = getHtmlLang(preferences.language)
+    root.dir = getTextDirection(preferences.language)
     root.dataset.text = preferences.textSize
     root.dataset.contrast = preferences.contrast
     savePreferences(preferences)
@@ -30,6 +35,18 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
       },
       setContrast: (contrast: ContrastMode) => {
         setPreferences((current) => ({ ...current, contrast }))
+      },
+      setQueueNotificationsEnabled: (enabled: boolean) => {
+        setPreferences((current) => ({
+          ...current,
+          queueNotificationsEnabled: enabled,
+        }))
+      },
+      setSimulatedCallEnabled: (enabled: boolean) => {
+        setPreferences((current) => ({
+          ...current,
+          simulatedCallEnabled: enabled,
+        }))
       },
       completeOnboarding: () => {
         setPreferences((current) => ({

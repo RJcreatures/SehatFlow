@@ -1,0 +1,68 @@
+{
+  "label": "Synthetic demonstration data \u2014 not live hospital activity.",
+  "version": "forecast-v1.1",
+  "seed": 20261024,
+  "generated_at_utc": "2026-10-24T08:20:17.349733Z",
+  "history_start": "2026-06-26",
+  "history_end": "2026-10-23",
+  "history_days": 120,
+  "granularity": "hourly",
+  "departments": [
+    {
+      "code": "general_medicine",
+      "name": "General Medicine"
+    },
+    {
+      "code": "pediatrics",
+      "name": "Pediatrics"
+    },
+    {
+      "code": "womens_health",
+      "name": "Women's Health"
+    },
+    {
+      "code": "orthopedics",
+      "name": "Orthopedics"
+    },
+    {
+      "code": "ent",
+      "name": "ENT"
+    },
+    {
+      "code": "ophthalmology",
+      "name": "Ophthalmology"
+    },
+    {
+      "code": "dermatology",
+      "name": "Dermatology"
+    }
+  ],
+  "holdout_days": 14,
+  "holdout_start_utc": "2026-10-10T00:00:00Z",
+  "holdout_end_utc": "2026-10-23T23:00:00Z",
+  "train_rows": 17808,
+  "test_rows": 2352,
+  "horizon_hours": 24,
+  "model": {
+    "type": "Ridge regression (closed-form NumPy)",
+    "alpha": 2.0,
+    "features": [
+      "department one-hot",
+      "hour sin/cos",
+      "dow sin/cos",
+      "is_weekend",
+      "morning/afternoon bands",
+      "weekend \u00d7 band interactions"
+    ]
+  },
+  "baseline": {
+    "type": "seasonal historical mean",
+    "description": "Mean arrivals for same department, day-of-week, and hour from training data only."
+  },
+  "assumptions": [
+    "Counts are synthetic Poisson draws around department-specific base rates.",
+    "Diurnal clinic hours, weekend reduction, mild weekday effects, gradual trend, and rare surge days are simulated.",
+    "No real patient registrations, queue entries, access codes, or patient-level records were used.",
+    "Patterns may not match any real hospital."
+  ]
+}

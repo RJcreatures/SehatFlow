@@ -40,6 +40,8 @@ describe("preferences storage", () => {
       contrast: "high",
       languageChosen: true,
       onboardingCompleted: true,
+      queueNotificationsEnabled: true,
+      simulatedCallEnabled: false,
     }
     savePreferences(next)
     expect(loadPreferences()).toEqual(next)
@@ -70,7 +72,15 @@ describe("preferences storage", () => {
       contrast: "default",
       languageChosen: true,
       onboardingCompleted: false,
+      queueNotificationsEnabled: false,
+      simulatedCallEnabled: false,
     })
     expect(loadPreferences().onboardingCompleted).toBe(false)
+  })
+
+  it("defaults notification and simulated-call opt-ins to off", () => {
+    installMemoryStorage()
+    expect(loadPreferences().queueNotificationsEnabled).toBe(false)
+    expect(loadPreferences().simulatedCallEnabled).toBe(false)
   })
 })

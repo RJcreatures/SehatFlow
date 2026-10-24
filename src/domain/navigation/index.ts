@@ -10,6 +10,15 @@ export {
   hospitalGraph,
   startPointOptions,
 } from "./hospitalGraph.ts"
+export {
+  matchDepartmentText,
+  matchLandmarkText,
+} from "./locationMatch.ts"
+export {
+  buildNaturalDirections,
+  hopsMatchPath,
+  routePathSignature,
+} from "./naturalDirections.ts"
 export { findRoute, routeContainsStairs } from "./pathfind.ts"
 export type {
   DirectionStep,

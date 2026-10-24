@@ -17,6 +17,11 @@ export type SavedSlip = {
   saved_at: string
 }
 
+export type LoadSlipResult =
+  | { status: "missing" }
+  | { status: "invalid" }
+  | { status: "ok"; slip: SavedSlip }
+
 const storageKey = `${appConfig.storageKey}.slip`
 
 export function saveSlip(slip: Omit<SavedSlip, "saved_at">): void {
@@ -31,20 +36,30 @@ export function saveSlip(slip: Omit<SavedSlip, "saved_at">): void {
   }
 }
 
-export function loadSlip(): SavedSlip | null {
+export function loadSlipResult(): LoadSlipResult {
   try {
     const raw = sessionStorage.getItem(storageKey)
     if (!raw) {
-      return null
+      return { status: "missing" }
     }
-    const parsed: unknown = JSON.parse(raw)
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(raw)
+    } catch {
+      return { status: "invalid" }
+    }
     if (!isSavedSlip(parsed)) {
-      return null
+      return { status: "invalid" }
     }
-    return parsed
+    return { status: "ok", slip: parsed }
   } catch {
-    return null
+    return { status: "invalid" }
   }
+}
+
+export function loadSlip(): SavedSlip | null {
+  const result = loadSlipResult()
+  return result.status === "ok" ? result.slip : null
 }
 
 export function clearSlip(): void {
@@ -55,7 +70,7 @@ export function clearSlip(): void {
   }
 }
 
-function isSavedSlip(value: unknown): value is SavedSlip {
+export function isSavedSlip(value: unknown): value is SavedSlip {
   if (typeof value !== "object" || value === null) {
     return false
   }
@@ -74,6 +89,7 @@ function isSavedSlip(value: unknown): value is SavedSlip {
     typeof record.floor_en === "string" &&
     typeof record.floor_hi === "string" &&
     typeof record.estimated_wait_minutes === "number" &&
+    Number.isFinite(record.estimated_wait_minutes) &&
     typeof record.service_date === "string" &&
     typeof record.saved_at === "string"
   )

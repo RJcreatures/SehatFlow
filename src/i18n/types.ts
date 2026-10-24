@@ -25,6 +25,13 @@ export type MessageCatalog = {
   myTurnHint: string
   findPlace: string
   findPlaceHint: string
+  visitDays: string
+  visitDaysHomeHint: string
+  visitDaysTitle: string
+  visitDaysHint: string
+  visitDaysIntro: string
+  visitDaysNotAdvice: string
+  visitDaysDepartmentNote: string
   emergency: string
   emergencyTileHint: string
   chooseLanguage: string
@@ -55,6 +62,40 @@ export type MessageCatalog = {
   qrInvalid: string
   qrInvalidHint: string
   qrLookingUp: string
+  qrScannerOpen: string
+  qrScannerTitle: string
+  qrScannerHint: string
+  qrScannerVideoLabel: string
+  qrScannerStarting: string
+  qrScannerScanning: string
+  qrScannerCancel: string
+  qrCameraDenied: string
+  qrCameraUnsupported: string
+  qrScanUnsupportedCode: string
+  notifySettingsLegend: string
+  notifySettingsExplain: string
+  notifyPrivacyNote: string
+  notifyForegroundOnly: string
+  notifyEnable: string
+  notifyDisable: string
+  notifyUnsupported: string
+  notifyDenied: string
+  notifyEnabledConfirm: string
+  notifyDisabledConfirm: string
+  notifyApproachingTitle: string
+  notifyApproachingBody: string
+  notifyCalledTitle: string
+  notifyCalledBody: string
+  notifyStatusTitle: string
+  notifyStatusBody: string
+  simCallSettingsLegend: string
+  simCallSettingsExplain: string
+  simCallDemoBanner: string
+  simCallOptIn: string
+  simCallTitle: string
+  simCallBody: string
+  simCallNoRealCall: string
+  simCallDismiss: string
   waitIndicatorLabel: string
   waitEstimateNote: string
   waitProgressLabel: string
@@ -78,6 +119,12 @@ export type MessageCatalog = {
   registerInvalidAge: string
   registerInvalidGender: string
   registerInvalidDepartment: string
+  registerInvalidInput: string
+  registerNetworkError: string
+  registerRateLimited: string
+  registerQueueFull: string
+  registerUncertain: string
+  registerAlreadyHaveSlip: string
   registerEstimateHint: string
   displayNameLabel: string
   ageLabel: string
@@ -118,6 +165,11 @@ export type MessageCatalog = {
   slipTitle: string
   slipBody: string
   slipMissing: string
+  slipEmptyHint: string
+  slipGoRegister: string
+  slipGoMyTurn: string
+  slipInvalid: string
+  slipRenderError: string
   slipKeepSafe: string
   slipAccessHint: string
   printSlip: string
@@ -135,6 +187,16 @@ export type MessageCatalog = {
   findSamePlace: string
   findNoRoute: string
   findNoStepFree: string
+  findTryStandardRoute: string
+  waitStaleBanner: string
+  boardStaleBanner: string
+  confirmCallNextToken: string
+  confirmCompleteToken: string
+  confirmNoShowToken: string
+  confirmSendToEndToken: string
+  confirmReassignToken: string
+  actionReassignedDetail: string
+  translationReviewNote: string
   findUnknownDestination: string
   findLoadingDepartments: string
   findAskHelp: string
@@ -148,9 +210,53 @@ export type MessageCatalog = {
   findStepFloorChange: string
   findFloorGround: string
   findFloorFirst: string
+  findFloorViewLabel: string
+  findFloorViewAll: string
+  findStartQuestion: string
+  findStartHint: string
+  findStartPickLandmark: string
+  findStartDescribe: string
+  findStartPlaceholder: string
+  findStartRequired: string
+  findStartConfirmNeeded: string
+  findStartUnrecognized: string
+  findStartConfirmed: string
+  findSuggestedStarts: string
+  findDestinationQuestion: string
+  findDestinationHint: string
+  findDestinationChoose: string
+  findDestinationDescribe: string
+  findDestinationPlaceholder: string
+  findDestinationRequired: string
+  findDestinationConfirmNeeded: string
+  findDestinationUnrecognized: string
+  findDestinationConfirmed: string
+  findSuggestedDestinations: string
+  findSuggestMatches: string
+  findContinue: string
+  findShowRoute: string
+  findChangeStart: string
+  findChangeDestination: string
+  findDirectionsHeading: string
+  findMatcherNote: string
+  findGeoOptional: string
+  findGeoUnavailable: string
+  findGeoDenied: string
+  findGeoApproximate: string
+  findPathSignature: string
+  findNaturalStart: string
+  findNaturalWalkTo: string
+  findNaturalTurnLeft: string
+  findNaturalTurnRight: string
+  findNaturalLift: string
+  findNaturalRamp: string
+  findNaturalStairs: string
+  findNaturalArrive: string
+  findNaturalSamePlace: string
   navEntrance: string
   navReception: string
   navHelpDesk: string
+  navWaterStation: string
   navCorridorGround: string
   navClinicWingGround: string
   navCorridorFirst: string
@@ -168,8 +274,25 @@ export type MessageCatalog = {
   emergencyTitle: string
   emergencyImmediate: string
   emergencyLead: string
+  emergencyNotAdvice: string
   noToken: string
   tellStaff: string
+  helpRequestTitle: string
+  helpRequestBody: string
+  helpRequestDistinction: string
+  helpRequestNotEmergency: string
+  helpRequestSubmit: string
+  helpRequestSubmitting: string
+  helpRequestPending: string
+  helpRequestAcknowledged: string
+  helpRequestReuseHint: string
+  helpRequestResendSafe: string
+  helpRequestError: string
+  helpRequestUnavailable: string
+  helpRequestGeneralDesk: string
+  staffUrgentNeedsAttention: string
+  urgentNoQueueChange: string
+  urgentAckRestricted: string
   signsTitle: string
   signChestPain: string
   signBreathing: string
@@ -200,6 +323,55 @@ export type MessageCatalog = {
   forecastTitle: string
   notImplemented: string
   forecastBody: string
+  forecastSyntheticBanner: string
+  forecastSyntheticPeriod: string
+  forecastDemoPurpose: string
+  forecastOverviewTitle: string
+  forecastSimpleTitle: string
+  forecastSimpleHint: string
+  forecastBusiestDay: string
+  forecastLeastBusyDay: string
+  forecastAvgPerDay: string
+  forecastDayRankTitle: string
+  forecastSimpleMethod: string
+  weekdayMonday: string
+  weekdayTuesday: string
+  weekdayWednesday: string
+  weekdayThursday: string
+  weekdayFriday: string
+  weekdaySaturday: string
+  weekdaySunday: string
+  forecastDepartmentFilter: string
+  forecastAllDepartments: string
+  forecastPeakLabel: string
+  forecastByDepartment: string
+  forecastNextHours: string
+  forecastSlotDetails: string
+  forecastHour: string
+  forecastDepartment: string
+  forecastModel: string
+  forecastBaseline: string
+  forecastEvalTitle: string
+  forecastLowerBetter: string
+  forecastEvalPeriod: string
+  forecastModelMae: string
+  forecastBaselineMae: string
+  forecastModelRmse: string
+  forecastBaselineRmse: string
+  forecastModelBetter: string
+  forecastBaselineBetter: string
+  forecastPerDepartment: string
+  forecastHeldoutTitle: string
+  forecastHeldoutHint: string
+  forecastActual: string
+  forecastLimitsTitle: string
+  forecastLimitSynthetic: string
+  forecastLimitPatterns: string
+  forecastLimitRealData: string
+  forecastLimitNoClinical: string
+  forecastSeedNote: string
+  forecastMissingArtifact: string
+  forecastCorruptArtifact: string
   boardTitle: string
   boardStatus: string
   boardPrivacy: string
@@ -274,4 +446,84 @@ export type MessageCatalog = {
   boardEmpty: string
   boardNext: string
   boardClock10x: string
+  voiceTitle: string
+  voiceHint: string
+  voiceStart: string
+  voiceStop: string
+  voiceCancel: string
+  voiceRetry: string
+  voiceReplay: string
+  voiceStopPlayback: string
+  voiceRecording: string
+  voiceProcessing: string
+  voiceListening: string
+  voiceAnswerLabel: string
+  voiceTranscriptLabel: string
+  voiceMicDenied: string
+  voiceUnavailable: string
+  voiceServiceError: string
+  voiceTimeout: string
+  voiceRateLimited: string
+  voiceBadAudio: string
+  voiceTooLong: string
+  voiceUnsupported: string
+  voiceNeedMyTurn: string
+  voiceWaitUnavailable: string
+  voiceUnknownDepartment: string
+  voiceAnswerToken: string
+  voiceAnswerTokenNoWait: string
+  voiceAnswerTokenCalled: string
+  voiceAnswerTokenDone: string
+  voiceAnswerWait: string
+  voiceAnswerDepartment: string
+  agentRouteMore: string
+  voiceTextOnlyFallback: string
+  voiceGoEmergency: string
+  voiceContinueApp: string
+  voiceNoSpeech: string
+  voiceOpenMyTurn: string
+  voiceAnswerAppHelp: string
+  voiceAnswerRegistrationHelp: string
+  assistantFabLabel: string
+  assistantFabHint: string
+  assistantDialogTitle: string
+  assistantDialogIntro: string
+  assistantClose: string
+  assistantTextLabel: string
+  assistantTextPlaceholder: string
+  assistantSend: string
+  assistantOpenRegister: string
+  askAi: string
+  askAiHint: string
+  askAiNav: string
+  agentAskName: string
+  agentAskAge: string
+  agentAskDepartment: string
+  agentAskDestination: string
+  agentNeedTokenContext: string
+  agentClarifyRegister: string
+  agentRegistered: string
+  agentRegisterFailed: string
+  agentDepartmentsPrefix: string
+  agentNavigated: string
+  agentUnsupportedAction: string
+  assistantOpenSlip: string
+  voiceConversationTitle: string
+  voiceConversationHint: string
+  voiceStartConversation: string
+  voiceEndConversation: string
+  voiceMuteMic: string
+  voiceUnmuteMic: string
+  voiceInterrupt: string
+  voicePartialLabel: string
+  voiceStateIdle: string
+  voiceStateConnecting: string
+  voiceStateListening: string
+  voiceStateRecognizing: string
+  voiceStateThinking: string
+  voiceStateSpeaking: string
+  voiceStateInterrupted: string
+  voiceStateMuted: string
+  voiceStateReconnecting: string
+  voiceStateError: string
 }

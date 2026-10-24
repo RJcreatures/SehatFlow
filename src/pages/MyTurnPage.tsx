@@ -1,8 +1,17 @@
-import { useEffect, useRef, useState, type FormEvent } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react"
 import { Link, useLocation, useNavigate } from "react-router"
 import { PageHeading } from "../components/PageHeading.tsx"
+import { QrScanner } from "../components/QrScanner.tsx"
 import { formatAboutWaitMinutes } from "../domain/queue.ts"
+import type { TokenContext } from "../domain/voice/answers.ts"
+import { configuredDepartmentFacts } from "../domain/voice/departmentFacts.ts"
+import { localizeQueueStatus } from "../domain/agent/spoken.ts"
+import {
+  localizedDepartmentName,
+  localizedRoomFloor,
+} from "../domain/departmentLabels.ts"
 import { captureQrTokenFromSearch } from "../domain/qrLookup.ts"
+import { WAIT_POLL_MS } from "../domain/waitIndicator.ts"
 import { validateMyTurnInput } from "../domain/registration.ts"
 import {
   getSupabaseClient,
@@ -13,11 +22,14 @@ import {
   type MyTurnResponse,
 } from "../lib/supabase/patientApi.ts"
 import { loadSlip } from "../lib/slipStorage.ts"
+import { useAssistantContext } from "../preferences/AssistantContext.tsx"
 import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
 
 export function MyTurnPage() {
   const messages = useMessages()
   const { preferences } = usePreferences()
+  const { setTokenContext, setDepartments, setRouteContext } =
+    useAssistantContext()
   const location = useLocation()
   const navigate = useNavigate()
   const supabaseState = readSupabaseState(import.meta.env)
@@ -31,24 +43,9 @@ export function MyTurnPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [qrLookup, setQrLookup] = useState(false)
+  const [scannerOpen, setScannerOpen] = useState(false)
 
-  useEffect(() => {
-    if (qrHandled.current) {
-      return
-    }
-    const { qrToken, cleanedSearch } = captureQrTokenFromSearch(location.search)
-    if (!qrToken) {
-      return
-    }
-    qrHandled.current = true
-    const nextUrl = `${location.pathname}${cleanedSearch}${location.hash}`
-    navigate(nextUrl, { replace: true })
-    void runQrLookup(qrToken)
-    // Intentionally once per mount for a present ?q= token.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
-
-  async function runQrLookup(qrToken: string) {
+  const runQrLookup = useCallback(async (qrToken: string) => {
     setError(null)
     setResult(null)
     setQrLookup(true)
@@ -87,7 +84,27 @@ export function MyTurnPage() {
 
     setResult(data)
     setTokenCode(data.token_code)
-  }
+  }, [
+    client,
+    messages.backendRefusedKey,
+    messages.backendUnconfigured,
+    messages.qrInvalid,
+    supabaseState.status,
+  ])
+
+  useEffect(() => {
+    if (qrHandled.current) {
+      return
+    }
+    const { qrToken, cleanedSearch } = captureQrTokenFromSearch(location.search)
+    if (!qrToken) {
+      return
+    }
+    qrHandled.current = true
+    const nextUrl = `${location.pathname}${cleanedSearch}${location.hash}`
+    navigate(nextUrl, { replace: true })
+    void runQrLookup(qrToken)
+  }, [location.hash, location.pathname, location.search, navigate, runQrLookup])
 
   async function runLookup(nextToken: string, nextAccess: string) {
     setError(null)
@@ -145,26 +162,101 @@ export function MyTurnPage() {
   }
 
   const departmentName = result
-    ? preferences.language === "hi"
-      ? result.department_name_hi
-      : result.department_name_en
+    ? localizedDepartmentName(messages, preferences.language, {
+        code: result.department_code,
+        name_en: result.department_name_en,
+        name_hi: result.department_name_hi,
+      })
     : null
-  const room = result
-    ? preferences.language === "hi"
-      ? result.room_hi
-      : result.room_en
+  const places = result
+    ? localizedRoomFloor(preferences.language, result, messages.notAvailable)
     : null
-  const floor = result
-    ? preferences.language === "hi"
-      ? result.floor_hi
-      : result.floor_en
-    : null
+  const room = places?.room ?? null
+  const floor = places?.floor ?? null
+
+  const tokenContext = useMemo((): TokenContext | null => {
+    if (!result || !departmentName || !room || !floor) {
+      return null
+    }
+    return {
+      token_code: result.token_code,
+      department_name: departmentName,
+      room,
+      floor,
+      status: result.status,
+      estimated_wait_minutes: result.estimated_wait_minutes,
+      patients_ahead: result.patients_ahead,
+    }
+  }, [result, departmentName, room, floor])
+
+  const departments = useMemo(
+    () => configuredDepartmentFacts(messages),
+    [messages],
+  )
+
+  useEffect(() => {
+    setTokenContext(tokenContext)
+    setDepartments(departments)
+    setRouteContext(null)
+    return () => {
+      setTokenContext(null)
+    }
+  }, [
+    tokenContext,
+    departments,
+    setTokenContext,
+    setDepartments,
+    setRouteContext,
+  ])
+
+  useEffect(() => {
+    if (!result || supabaseState.status !== "ready" || !client) {
+      return
+    }
+    let cancelled = false
+    const refreshLive = async () => {
+      const slip = loadSlip()
+      const request =
+        slip?.qr_token && slip.token_code === result.token_code
+          ? { qr_token: slip.qr_token }
+          : accessCode.trim().length >= 8
+            ? {
+                token_code: result.token_code,
+                access_code: accessCode.trim().toUpperCase(),
+              }
+            : slip?.access_code && slip.token_code === result.token_code
+              ? {
+                  token_code: slip.token_code,
+                  access_code: slip.access_code,
+                }
+              : null
+      if (!request) {
+        return
+      }
+      const { data, error: lookupError } = await getMyTurn(client, request)
+      if (
+        cancelled ||
+        lookupError ||
+        !data ||
+        (typeof data === "object" && "error" in data)
+      ) {
+        return
+      }
+      setResult(data)
+    }
+    const timer = window.setInterval(() => {
+      void refreshLive()
+    }, WAIT_POLL_MS)
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [accessCode, client, result, supabaseState.status])
 
   return (
     <>
       <PageHeading title={messages.myTurnTitle}>
         <p>{messages.myTurnLiveBody}</p>
-        <p>{messages.queueStatusOnly}</p>
       </PageHeading>
 
       {qrLookup || (loading && !result) ? (
@@ -172,6 +264,34 @@ export function MyTurnPage() {
           {messages.qrLookingUp}
         </p>
       ) : null}
+
+      {!scannerOpen ? (
+        <p>
+          <button
+            type="button"
+            className="button button-secondary"
+            onClick={() => {
+              setError(null)
+              setScannerOpen(true)
+            }}
+          >
+            {messages.qrScannerOpen}
+          </button>
+        </p>
+      ) : (
+        <QrScanner
+          active={scannerOpen}
+          onDetected={(qrToken) => {
+            setScannerOpen(false)
+            void runQrLookup(qrToken)
+          }}
+          onCancel={() => setScannerOpen(false)}
+          onUnsupported={() => {
+            setScannerOpen(false)
+            setError(messages.qrCameraUnsupported)
+          }}
+        />
+      )}
 
       <form className="panel settings-form" onSubmit={onSubmit} noValidate>
         <label className="field">
@@ -223,9 +343,7 @@ export function MyTurnPage() {
             <span className="status-banner-mark" aria-hidden="true">
               {statusMark(result.status)}
             </span>
-            <span>
-              {messages.statusLabel}: {statusLabel(result.status, messages)}
-            </span>
+            <span>{localizeQueueStatus(result.status, messages)}</span>
           </p>
           <dl className="facts">
             <div>
@@ -265,28 +383,6 @@ export function MyTurnPage() {
       ) : null}
     </>
   )
-}
-
-function statusLabel(
-  status: string,
-  messages: ReturnType<typeof useMessages>,
-): string {
-  switch (status) {
-    case "waiting":
-      return messages.statusWaiting
-    case "called":
-      return messages.statusCalled
-    case "completed":
-      return messages.statusCompleted
-    case "no_show":
-      return messages.statusNoShow
-    case "skipped":
-      return messages.statusSkipped
-    case "cancelled":
-      return messages.statusCancelled
-    default:
-      return status
-  }
 }
 
 function statusMark(status: string): string {

@@ -5,9 +5,9 @@ export const patientNavItems = [
   { id: "home", to: "/", match: (path: string) => path === "/" },
   { id: "find", to: "/find", match: (path: string) => path === "/find" },
   {
-    id: "myTurn",
-    to: "/my-turn",
-    match: (path: string) => path === "/my-turn",
+    id: "askAi",
+    to: "/ask",
+    match: (path: string) => path === "/ask",
   },
   {
     id: "settings",

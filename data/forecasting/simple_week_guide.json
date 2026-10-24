@@ -1,0 +1,512 @@
+{
+  "label": "Synthetic demonstration data \u2014 simple weekday averages, not live hospital activity.",
+  "method": "Average total patient arrivals per weekday from the full synthetic historical period. This is a basic seasonal day model (no neural net).",
+  "units": "patients per day",
+  "history_days": 120,
+  "overall": {
+    "days": [
+      {
+        "dow": 0,
+        "day_name": "Monday",
+        "avg_daily_arrivals": 453.1,
+        "sample_days": 17,
+        "rank": 1
+      },
+      {
+        "dow": 1,
+        "day_name": "Tuesday",
+        "avg_daily_arrivals": 446.3,
+        "sample_days": 17,
+        "rank": 2
+      },
+      {
+        "dow": 2,
+        "day_name": "Wednesday",
+        "avg_daily_arrivals": 402.1,
+        "sample_days": 17,
+        "rank": 3
+      },
+      {
+        "dow": 3,
+        "day_name": "Thursday",
+        "avg_daily_arrivals": 392.0,
+        "sample_days": 17,
+        "rank": 4
+      },
+      {
+        "dow": 4,
+        "day_name": "Friday",
+        "avg_daily_arrivals": 358.0,
+        "sample_days": 18,
+        "rank": 5
+      },
+      {
+        "dow": 5,
+        "day_name": "Saturday",
+        "avg_daily_arrivals": 227.3,
+        "sample_days": 17,
+        "rank": 6
+      },
+      {
+        "dow": 6,
+        "day_name": "Sunday",
+        "avg_daily_arrivals": 221.2,
+        "sample_days": 17,
+        "rank": 7
+      }
+    ],
+    "busiest": {
+      "dow": 0,
+      "day_name": "Monday",
+      "avg_daily_arrivals": 453.1
+    },
+    "least_busy": {
+      "dow": 6,
+      "day_name": "Sunday",
+      "avg_daily_arrivals": 221.2
+    }
+  },
+  "by_department": {
+    "general_medicine": {
+      "days": [
+        {
+          "dow": 0,
+          "day_name": "Monday",
+          "avg_daily_arrivals": 115.1,
+          "sample_days": 17,
+          "rank": 1
+        },
+        {
+          "dow": 1,
+          "day_name": "Tuesday",
+          "avg_daily_arrivals": 111.9,
+          "sample_days": 17,
+          "rank": 2
+        },
+        {
+          "dow": 2,
+          "day_name": "Wednesday",
+          "avg_daily_arrivals": 99.7,
+          "sample_days": 17,
+          "rank": 3
+        },
+        {
+          "dow": 3,
+          "day_name": "Thursday",
+          "avg_daily_arrivals": 99.4,
+          "sample_days": 17,
+          "rank": 4
+        },
+        {
+          "dow": 4,
+          "day_name": "Friday",
+          "avg_daily_arrivals": 88.4,
+          "sample_days": 18,
+          "rank": 5
+        },
+        {
+          "dow": 5,
+          "day_name": "Saturday",
+          "avg_daily_arrivals": 59.5,
+          "sample_days": 17,
+          "rank": 6
+        },
+        {
+          "dow": 6,
+          "day_name": "Sunday",
+          "avg_daily_arrivals": 54.9,
+          "sample_days": 17,
+          "rank": 7
+        }
+      ],
+      "busiest": {
+        "dow": 0,
+        "day_name": "Monday",
+        "avg_daily_arrivals": 115.1
+      },
+      "least_busy": {
+        "dow": 6,
+        "day_name": "Sunday",
+        "avg_daily_arrivals": 54.9
+      }
+    },
+    "pediatrics": {
+      "days": [
+        {
+          "dow": 0,
+          "day_name": "Monday",
+          "avg_daily_arrivals": 82.6,
+          "sample_days": 17,
+          "rank": 1
+        },
+        {
+          "dow": 1,
+          "day_name": "Tuesday",
+          "avg_daily_arrivals": 80.6,
+          "sample_days": 17,
+          "rank": 2
+        },
+        {
+          "dow": 2,
+          "day_name": "Wednesday",
+          "avg_daily_arrivals": 71.4,
+          "sample_days": 17,
+          "rank": 3
+        },
+        {
+          "dow": 3,
+          "day_name": "Thursday",
+          "avg_daily_arrivals": 70.5,
+          "sample_days": 17,
+          "rank": 4
+        },
+        {
+          "dow": 4,
+          "day_name": "Friday",
+          "avg_daily_arrivals": 65.8,
+          "sample_days": 18,
+          "rank": 5
+        },
+        {
+          "dow": 5,
+          "day_name": "Saturday",
+          "avg_daily_arrivals": 43.1,
+          "sample_days": 17,
+          "rank": 6
+        },
+        {
+          "dow": 6,
+          "day_name": "Sunday",
+          "avg_daily_arrivals": 38.5,
+          "sample_days": 17,
+          "rank": 7
+        }
+      ],
+      "busiest": {
+        "dow": 0,
+        "day_name": "Monday",
+        "avg_daily_arrivals": 82.6
+      },
+      "least_busy": {
+        "dow": 6,
+        "day_name": "Sunday",
+        "avg_daily_arrivals": 38.5
+      }
+    },
+    "womens_health": {
+      "days": [
+        {
+          "dow": 0,
+          "day_name": "Monday",
+          "avg_daily_arrivals": 65.8,
+          "sample_days": 17,
+          "rank": 2
+        },
+        {
+          "dow": 1,
+          "day_name": "Tuesday",
+          "avg_daily_arrivals": 66.1,
+          "sample_days": 17,
+          "rank": 1
+        },
+        {
+          "dow": 2,
+          "day_name": "Wednesday",
+          "avg_daily_arrivals": 59.3,
+          "sample_days": 17,
+          "rank": 3
+        },
+        {
+          "dow": 3,
+          "day_name": "Thursday",
+          "avg_daily_arrivals": 57.5,
+          "sample_days": 17,
+          "rank": 4
+        },
+        {
+          "dow": 4,
+          "day_name": "Friday",
+          "avg_daily_arrivals": 54.1,
+          "sample_days": 18,
+          "rank": 5
+        },
+        {
+          "dow": 5,
+          "day_name": "Saturday",
+          "avg_daily_arrivals": 32.6,
+          "sample_days": 17,
+          "rank": 6
+        },
+        {
+          "dow": 6,
+          "day_name": "Sunday",
+          "avg_daily_arrivals": 32.4,
+          "sample_days": 17,
+          "rank": 7
+        }
+      ],
+      "busiest": {
+        "dow": 1,
+        "day_name": "Tuesday",
+        "avg_daily_arrivals": 66.1
+      },
+      "least_busy": {
+        "dow": 6,
+        "day_name": "Sunday",
+        "avg_daily_arrivals": 32.4
+      }
+    },
+    "orthopedics": {
+      "days": [
+        {
+          "dow": 0,
+          "day_name": "Monday",
+          "avg_daily_arrivals": 63.1,
+          "sample_days": 17,
+          "rank": 2
+        },
+        {
+          "dow": 1,
+          "day_name": "Tuesday",
+          "avg_daily_arrivals": 64.8,
+          "sample_days": 17,
+          "rank": 1
+        },
+        {
+          "dow": 2,
+          "day_name": "Wednesday",
+          "avg_daily_arrivals": 56.9,
+          "sample_days": 17,
+          "rank": 3
+        },
+        {
+          "dow": 3,
+          "day_name": "Thursday",
+          "avg_daily_arrivals": 55.9,
+          "sample_days": 17,
+          "rank": 4
+        },
+        {
+          "dow": 4,
+          "day_name": "Friday",
+          "avg_daily_arrivals": 51.1,
+          "sample_days": 18,
+          "rank": 5
+        },
+        {
+          "dow": 5,
+          "day_name": "Saturday",
+          "avg_daily_arrivals": 32.5,
+          "sample_days": 17,
+          "rank": 7
+        },
+        {
+          "dow": 6,
+          "day_name": "Sunday",
+          "avg_daily_arrivals": 33.2,
+          "sample_days": 17,
+          "rank": 6
+        }
+      ],
+      "busiest": {
+        "dow": 1,
+        "day_name": "Tuesday",
+        "avg_daily_arrivals": 64.8
+      },
+      "least_busy": {
+        "dow": 5,
+        "day_name": "Saturday",
+        "avg_daily_arrivals": 32.5
+      }
+    },
+    "ent": {
+      "days": [
+        {
+          "dow": 0,
+          "day_name": "Monday",
+          "avg_daily_arrivals": 45.2,
+          "sample_days": 17,
+          "rank": 1
+        },
+        {
+          "dow": 1,
+          "day_name": "Tuesday",
+          "avg_daily_arrivals": 44.7,
+          "sample_days": 17,
+          "rank": 2
+        },
+        {
+          "dow": 2,
+          "day_name": "Wednesday",
+          "avg_daily_arrivals": 40.9,
+          "sample_days": 17,
+          "rank": 3
+        },
+        {
+          "dow": 3,
+          "day_name": "Thursday",
+          "avg_daily_arrivals": 40.2,
+          "sample_days": 17,
+          "rank": 4
+        },
+        {
+          "dow": 4,
+          "day_name": "Friday",
+          "avg_daily_arrivals": 36.9,
+          "sample_days": 18,
+          "rank": 5
+        },
+        {
+          "dow": 5,
+          "day_name": "Saturday",
+          "avg_daily_arrivals": 22.1,
+          "sample_days": 17,
+          "rank": 7
+        },
+        {
+          "dow": 6,
+          "day_name": "Sunday",
+          "avg_daily_arrivals": 22.5,
+          "sample_days": 17,
+          "rank": 6
+        }
+      ],
+      "busiest": {
+        "dow": 0,
+        "day_name": "Monday",
+        "avg_daily_arrivals": 45.2
+      },
+      "least_busy": {
+        "dow": 5,
+        "day_name": "Saturday",
+        "avg_daily_arrivals": 22.1
+      }
+    },
+    "ophthalmology": {
+      "days": [
+        {
+          "dow": 0,
+          "day_name": "Monday",
+          "avg_daily_arrivals": 42.8,
+          "sample_days": 17,
+          "rank": 1
+        },
+        {
+          "dow": 1,
+          "day_name": "Tuesday",
+          "avg_daily_arrivals": 39.8,
+          "sample_days": 17,
+          "rank": 2
+        },
+        {
+          "dow": 2,
+          "day_name": "Wednesday",
+          "avg_daily_arrivals": 38.2,
+          "sample_days": 17,
+          "rank": 3
+        },
+        {
+          "dow": 3,
+          "day_name": "Thursday",
+          "avg_daily_arrivals": 35.8,
+          "sample_days": 17,
+          "rank": 4
+        },
+        {
+          "dow": 4,
+          "day_name": "Friday",
+          "avg_daily_arrivals": 34.3,
+          "sample_days": 18,
+          "rank": 5
+        },
+        {
+          "dow": 5,
+          "day_name": "Saturday",
+          "avg_daily_arrivals": 19.2,
+          "sample_days": 17,
+          "rank": 7
+        },
+        {
+          "dow": 6,
+          "day_name": "Sunday",
+          "avg_daily_arrivals": 22.4,
+          "sample_days": 17,
+          "rank": 6
+        }
+      ],
+      "busiest": {
+        "dow": 0,
+        "day_name": "Monday",
+        "avg_daily_arrivals": 42.8
+      },
+      "least_busy": {
+        "dow": 5,
+        "day_name": "Saturday",
+        "avg_daily_arrivals": 19.2
+      }
+    },
+    "dermatology": {
+      "days": [
+        {
+          "dow": 0,
+          "day_name": "Monday",
+          "avg_daily_arrivals": 38.4,
+          "sample_days": 17,
+          "rank": 1
+        },
+        {
+          "dow": 1,
+          "day_name": "Tuesday",
+          "avg_daily_arrivals": 38.4,
+          "sample_days": 17,
+          "rank": 2
+        },
+        {
+          "dow": 2,
+          "day_name": "Wednesday",
+          "avg_daily_arrivals": 35.8,
+          "sample_days": 17,
+          "rank": 3
+        },
+        {
+          "dow": 3,
+          "day_name": "Thursday",
+          "avg_daily_arrivals": 32.6,
+          "sample_days": 17,
+          "rank": 4
+        },
+        {
+          "dow": 4,
+          "day_name": "Friday",
+          "avg_daily_arrivals": 27.3,
+          "sample_days": 18,
+          "rank": 5
+        },
+        {
+          "dow": 5,
+          "day_name": "Saturday",
+          "avg_daily_arrivals": 18.2,
+          "sample_days": 17,
+          "rank": 6
+        },
+        {
+          "dow": 6,
+          "day_name": "Sunday",
+          "avg_daily_arrivals": 17.4,
+          "sample_days": 17,
+          "rank": 7
+        }
+      ],
+      "busiest": {
+        "dow": 0,
+        "day_name": "Monday",
+        "avg_daily_arrivals": 38.4
+      },
+      "least_busy": {
+        "dow": 6,
+        "day_name": "Sunday",
+        "avg_daily_arrivals": 17.4
+      }
+    }
+  }
+}

@@ -10,6 +10,8 @@ import {
   formatAboutWaitMinutes,
   meanConsultationMinutes,
 } from "../domain/queue.ts"
+import { localizeQueueStatus } from "../domain/agent/spoken.ts"
+import { localizedDepartmentName } from "../domain/departmentLabels.ts"
 import { staffCan } from "../domain/roles.ts"
 import { supabaseErrorMessage } from "../lib/supabase/errors.ts"
 import type {
@@ -30,7 +32,7 @@ import {
   type AppSupabase,
   type DemoClockPayload,
 } from "../lib/supabase/queueApi.ts"
-import { useMessages } from "../preferences/usePreferences.ts"
+import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
 import { useStaffAuth } from "./useStaffAuth.ts"
 
 type Department = {
@@ -90,6 +92,7 @@ function toClock(payload: DemoClockPayload): DemoClockState {
 
 export function StaffDashboard() {
   const messages = useMessages()
+  const { preferences } = usePreferences()
   const { client, profile } = useStaffAuth()
   const role = profile!.role
   const [departments, setDepartments] = useState<Department[]>([])
@@ -279,6 +282,20 @@ export function StaffDashboard() {
   const recoverable = departmentEntries.filter(
     (entry) => entry.status === "no_show" || entry.status === "skipped",
   )
+  const selectedDepartmentLabel = selected
+    ? localizedDepartmentName(messages, preferences.language, selected)
+    : ""
+  const selectedPlaces = selected
+    ? preferences.language === "hi"
+      ? {
+          room: selected.room_hi || selected.room_en,
+          floor: selected.floor_hi || selected.floor_en,
+        }
+      : {
+          room: selected.room_en || selected.room_hi,
+          floor: selected.floor_en || selected.floor_hi,
+        }
+    : { room: "", floor: "" }
   const doctor = selectedId ? doctors[selectedId] : undefined
   const completedSamples = departmentEntries
     .filter(
@@ -305,26 +322,53 @@ export function StaffDashboard() {
 
   async function runAction(
     label: string,
-    action: (supabase: AppSupabase) => Promise<{ error: { message: string } | null }>,
+    action: (
+      supabase: AppSupabase,
+    ) => Promise<{ data?: unknown; error: { message: string } | null }>,
   ) {
-    if (!client) {
+    if (!client || actionBusy) {
       return
     }
     setActionBusy(true)
     setError(null)
     setMessage(null)
-    const { error: actionError } = await action(client)
-    setActionBusy(false)
-    if (actionError) {
-      setError(supabaseErrorMessage(actionError, label))
-      return
-    }
-    setMessage(label)
     try {
-      await refresh()
-    } catch (refreshError) {
-      setError(supabaseErrorMessage(refreshError, messages.staffLoadError))
+      const { data, error: actionError } = await action(client)
+      if (actionError) {
+        setError(supabaseErrorMessage(actionError, label))
+        return
+      }
+      const tokenFromResult =
+        data &&
+        typeof data === "object" &&
+        "token_code" in data &&
+        typeof (data as { token_code: unknown }).token_code === "string"
+          ? (data as { token_code: string }).token_code
+          : null
+      setMessage(
+        tokenFromResult && label === messages.actionReassigned
+          ? messages.actionReassignedDetail.replace("{token}", tokenFromResult)
+          : label,
+      )
+      try {
+        await refresh()
+      } catch (refreshError) {
+        setError(supabaseErrorMessage(refreshError, messages.staffLoadError))
+        setStale(true)
+      }
+    } finally {
+      setActionBusy(false)
     }
+  }
+
+  function fillConfirm(
+    template: string,
+    token: string,
+    departmentName: string,
+  ): string {
+    return template
+      .replace("{token}", token)
+      .replace("{department}", departmentName)
   }
 
   if (loading) {
@@ -350,36 +394,78 @@ export function StaffDashboard() {
         </p>
       ) : null}
 
-      <section className="panel" aria-label={messages.urgentTitle}>
+      <section
+        className={
+          flags.length > 0
+            ? "panel panel-urgent-alert"
+            : "panel"
+        }
+        aria-label={messages.urgentTitle}
+        aria-live="polite"
+      >
         <h2>{messages.urgentTitle}</h2>
+        {flags.length > 0 ? (
+          <p className="emphasis" role="status">
+            {messages.staffUrgentNeedsAttention.replace(
+              "{count}",
+              String(flags.length),
+            )}
+          </p>
+        ) : null}
         {flags.length === 0 ? (
           <p>{messages.urgentEmpty}</p>
         ) : (
           <ul className="flag-list">
-            {flags.map((flag) => (
-              <li key={flag.id} className="flag-item">
-                <span>
-                  {messages.urgentOpen} · {flag.created_at}
-                </span>
-                {staffCan(role, "acknowledge_urgent") ? (
-                  <button
-                    type="button"
-                    className="button"
-                    disabled={actionBusy}
-                    onClick={() => {
-                      if (!window.confirm(messages.confirmAcknowledge)) {
-                        return
-                      }
-                      void runAction(messages.actionAcknowledged, (supabase) =>
-                        acknowledgeUrgent(supabase, flag.id),
-                      )
-                    }}
-                  >
-                    {messages.acknowledge}
-                  </button>
-                ) : null}
-              </li>
-            ))}
+            {flags.map((flag) => {
+              const department = departments.find(
+                (item) => item.id === flag.department_id,
+              )
+              const departmentLabel = department
+                ? localizedDepartmentName(
+                    messages,
+                    preferences.language,
+                    department,
+                  )
+                : messages.helpRequestGeneralDesk
+              return (
+                <li key={flag.id} className="flag-item is-open">
+                  <div>
+                    <p className="flag-status">
+                      <span className="flag-badge" aria-hidden="true">
+                        !
+                      </span>
+                      {messages.urgentOpen}
+                    </p>
+                    <p>
+                      {messages.departmentLabel}: {departmentLabel}
+                    </p>
+                    <p className="button-hint" dir="ltr">
+                      {flag.created_at}
+                    </p>
+                    <p className="privacy-note">{messages.urgentNoQueueChange}</p>
+                  </div>
+                  {staffCan(role, "acknowledge_urgent") ? (
+                    <button
+                      type="button"
+                      className="button"
+                      disabled={actionBusy}
+                      onClick={() => {
+                        if (!window.confirm(messages.confirmAcknowledge)) {
+                          return
+                        }
+                        void runAction(messages.actionAcknowledged, (supabase) =>
+                          acknowledgeUrgent(supabase, flag.id),
+                        )
+                      }}
+                    >
+                      {messages.acknowledge}
+                    </button>
+                  ) : (
+                    <p className="button-hint">{messages.urgentAckRestricted}</p>
+                  )}
+                </li>
+              )
+            })}
           </ul>
         )}
       </section>
@@ -392,17 +478,21 @@ export function StaffDashboard() {
         >
           {departments.map((department) => (
             <option key={department.id} value={department.id}>
-              {department.name_en}
+              {localizedDepartmentName(
+                messages,
+                preferences.language,
+                department,
+              )}
             </option>
           ))}
         </select>
       </label>
 
       {selected ? (
-        <section className="panel" aria-label={selected.name_en}>
-          <h2>{selected.name_en}</h2>
+        <section className="panel" aria-label={selectedDepartmentLabel}>
+          <h2>{selectedDepartmentLabel}</h2>
           <p>
-            {selected.room_en} · {selected.floor_en}
+            {selectedPlaces.room} · {selectedPlaces.floor}
           </p>
           <dl className="facts">
             <div>
@@ -459,7 +549,16 @@ export function StaffDashboard() {
                 className="button"
                 disabled={actionBusy}
                 onClick={() => {
-                  if (!window.confirm(messages.confirmCallNext)) {
+                  const nextToken = waiting[0]?.token_code ?? "?"
+                  if (
+                    !window.confirm(
+                      fillConfirm(
+                        messages.confirmCallNextToken,
+                        nextToken,
+                        selectedDepartmentLabel,
+                      ),
+                    )
+                  ) {
                     return
                   }
                   void runAction(messages.actionCalled, (supabase) =>
@@ -476,7 +575,15 @@ export function StaffDashboard() {
                 className="button"
                 disabled={actionBusy}
                 onClick={() => {
-                  if (!window.confirm(messages.confirmComplete)) {
+                  if (
+                    !window.confirm(
+                      fillConfirm(
+                        messages.confirmCompleteToken,
+                        called.token_code,
+                        selectedDepartmentLabel,
+                      ),
+                    )
+                  ) {
                     return
                   }
                   void runAction(messages.actionCompleted, (supabase) =>
@@ -484,7 +591,7 @@ export function StaffDashboard() {
                   )
                 }}
               >
-                {messages.completeToken}
+                {messages.completeToken} ({called.token_code})
               </button>
             ) : null}
             {staffCan(role, "no_show") && called ? (
@@ -493,7 +600,15 @@ export function StaffDashboard() {
                 className="button button-secondary"
                 disabled={actionBusy}
                 onClick={() => {
-                  if (!window.confirm(messages.confirmNoShow)) {
+                  if (
+                    !window.confirm(
+                      fillConfirm(
+                        messages.confirmNoShowToken,
+                        called.token_code,
+                        selectedDepartmentLabel,
+                      ),
+                    )
+                  ) {
                     return
                   }
                   void runAction(messages.actionNoShow, (supabase) =>
@@ -501,7 +616,7 @@ export function StaffDashboard() {
                   )
                 }}
               >
-                {messages.markNoShow}
+                {messages.markNoShow} ({called.token_code})
               </button>
             ) : null}
           </div>
@@ -516,7 +631,15 @@ export function StaffDashboard() {
                   className="button button-secondary"
                   disabled={actionBusy}
                   onClick={() => {
-                    if (!window.confirm(messages.confirmSendToEnd)) {
+                    if (
+                      !window.confirm(
+                        fillConfirm(
+                          messages.confirmSendToEndToken,
+                          entry.token_code,
+                          selectedDepartmentLabel,
+                        ),
+                      )
+                    ) {
                       return
                     }
                     void runAction(messages.actionSentToEnd, (supabase) =>
@@ -524,7 +647,8 @@ export function StaffDashboard() {
                     )
                   }}
                 >
-                  {entry.token_code} · {entry.status}
+                  {entry.token_code} ·{" "}
+                  {localizeQueueStatus(entry.status, messages)}
                 </button>
               ))}
             </div>
@@ -544,7 +668,11 @@ export function StaffDashboard() {
                     .filter((department) => department.id !== selected.id)
                     .map((department) => (
                       <option key={department.id} value={department.id}>
-                        {department.name_en}
+                        {localizedDepartmentName(
+                          messages,
+                          preferences.language,
+                          department,
+                        )}
                       </option>
                     ))}
                 </select>
@@ -558,7 +686,15 @@ export function StaffDashboard() {
                   if (!entry || !reassignTarget) {
                     return
                   }
-                  if (!window.confirm(messages.confirmReassign)) {
+                  if (
+                    !window.confirm(
+                      fillConfirm(
+                        messages.confirmReassignToken,
+                        entry.token_code,
+                        selectedDepartmentLabel,
+                      ),
+                    )
+                  ) {
                     return
                   }
                   void runAction(messages.actionReassigned, (supabase) =>
@@ -567,6 +703,9 @@ export function StaffDashboard() {
                 }}
               >
                 {messages.reassign}
+                {called || waiting[0]
+                  ? ` (${(called ?? waiting[0])!.token_code})`
+                  : ""}
               </button>
             </div>
           ) : null}

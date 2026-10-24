@@ -72,3 +72,56 @@ export function IconInfo({ className = "icon" }: IconProps) {
     </svg>
   )
 }
+
+export function IconAsk({ className = "icon" }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <path
+        d="M5 6.5A3.5 3.5 0 0 1 8.5 3h7A3.5 3.5 0 0 1 19 6.5v5a3.5 3.5 0 0 1-3.5 3.5H11l-4 4v-4H8.5A3.5 3.5 0 0 1 5 11.5v-5z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M9.5 8.2c0-1.2.9-2 2.1-2s2.1.8 2.1 1.9c0 .9-.5 1.4-1.3 1.8-.5.3-.8.6-.8 1.2M11.6 14h.01"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+/** Calendar-style mark for the public busy/quiet visit days guide. */
+export function IconVisitDays({ className = "icon" }: IconProps) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
+      <rect
+        x="3"
+        y="5"
+        width="18"
+        height="16"
+        rx="2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M8 3v4M16 3v4M3 10h18"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M7 15h2M11 15h2M15 15h2M7 18h2M11 18h2"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}

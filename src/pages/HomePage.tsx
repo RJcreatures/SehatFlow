@@ -1,9 +1,12 @@
 import { Link } from "react-router"
+import { AppBrand } from "../components/AppBrand.tsx"
 import {
+  IconAsk,
   IconEmergency,
   IconPlace,
   IconRegister,
   IconSlip,
+  IconVisitDays,
 } from "../components/icons.tsx"
 import { PageHeading } from "../components/PageHeading.tsx"
 import { loadSlip } from "../lib/slipStorage.ts"
@@ -15,6 +18,9 @@ export function HomePage() {
 
   return (
     <>
+      <div className="home-brand">
+        <AppBrand variant="hero" showTagline />
+      </div>
       <PageHeading title={messages.homeGreeting}>
         <p>{messages.homeIntro}</p>
       </PageHeading>
@@ -40,11 +46,25 @@ export function HomePage() {
             </span>
           </span>
         </Link>
+        <Link className="button button-secondary" to="/ask">
+          <IconAsk />
+          <span>
+            <span className="button-label">{messages.askAi}</span>
+            <span className="button-hint">{messages.askAiHint}</span>
+          </span>
+        </Link>
         <Link className="button button-secondary" to="/find">
           <IconPlace />
           <span>
             <span className="button-label">{messages.findPlace}</span>
             <span className="button-hint">{messages.findPlaceHint}</span>
+          </span>
+        </Link>
+        <Link className="button button-secondary" to="/visit-days">
+          <IconVisitDays />
+          <span>
+            <span className="button-label">{messages.visitDays}</span>
+            <span className="button-hint">{messages.visitDaysHomeHint}</span>
           </span>
         </Link>
         <Link className="button button-emergency" to="/emergency">
@@ -55,7 +75,6 @@ export function HomePage() {
           </span>
         </Link>
       </nav>
-      <p className="privacy-note">{messages.privacyShort}</p>
     </>
   )
 }

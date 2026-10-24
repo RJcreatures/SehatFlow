@@ -14,7 +14,7 @@ export const en = {
   settings: "Settings",
   language: "Language",
   home: "Home",
-  homeIntro: "Register for an OPD visit, check your turn, or find a department.",
+  homeIntro: "Start with registration, or check a token you already have.",
   primaryNav: "Main actions",
   bottomNav: "Patient navigation",
   mySlip: "My Slip",
@@ -29,6 +29,16 @@ export const en = {
   myTurnHint: "Check a token",
   findPlace: "Find a place",
   findPlaceHint: "Directions inside the hospital",
+  visitDays: "Best days to visit",
+  visitDaysHomeHint: "See which days are usually busiest or quietest",
+  visitDaysTitle: "Which days are crowded?",
+  visitDaysHint:
+    "Use this simple guide to pick a quieter day for a routine visit. Figures are demonstration averages, not live hospital crowds.",
+  visitDaysIntro:
+    "Anyone can open this page — no sign-in needed. It shows usual busy and quiet weekdays from synthetic demonstration data.",
+  visitDaysNotAdvice:
+    "This is planning guidance only. It must not be used to deny care, skip emergencies, or replace clinical advice.",
+  visitDaysDepartmentNote: "Showing usual weekday patterns for {department}.",
   emergency: "Emergency",
   emergencyTileHint: "Go now. No token needed.",
   chooseLanguage: "Choose your language",
@@ -64,6 +74,49 @@ export const en = {
   qrInvalidHint:
     "Enter the token and access code from your slip to check My Turn manually.",
   qrLookingUp: "Reading your QR code…",
+  qrScannerOpen: "Scan QR",
+  qrScannerTitle: "Scan your slip QR",
+  qrScannerHint:
+    "Allow camera access, then point at the SehatFlow slip QR code. You can cancel any time and enter your token manually.",
+  qrScannerVideoLabel: "Live camera preview for QR scanning",
+  qrScannerStarting: "Starting camera…",
+  qrScannerScanning: "Looking for a SehatFlow QR code…",
+  qrScannerCancel: "Cancel scan",
+  qrCameraDenied:
+    "Camera permission was denied. Enter your token and access code manually below.",
+  qrCameraUnsupported:
+    "This browser cannot open the camera scanner. Enter your token and access code manually.",
+  qrScanUnsupportedCode:
+    "That QR code is not a SehatFlow slip code. Try again or enter details manually.",
+  notifySettingsLegend: "Queue notifications",
+  notifySettingsExplain:
+    "Optional alerts for your own turn while SehatFlow is open. No diagnoses or access codes. Not SMS or a phone call.",
+  notifyPrivacyNote:
+    "Notifications never include diagnoses, access codes, or another patient's data.",
+  notifyForegroundOnly:
+    "These alerts work while SehatFlow is open in this browser. They are not a phone call or SMS, and they may not arrive after you close the app.",
+  notifyEnable: "Turn on queue notifications",
+  notifyDisable: "Turn off queue notifications",
+  notifyUnsupported: "This browser does not support notifications.",
+  notifyDenied: "Notification permission was denied. In-app status updates still work.",
+  notifyEnabledConfirm: "Queue notifications are on for this device.",
+  notifyDisabledConfirm: "Queue notifications are off.",
+  notifyApproachingTitle: "Your turn is near",
+  notifyApproachingBody: "Token {token} is approaching. Open SehatFlow for the latest status.",
+  notifyCalledTitle: "Your token was called",
+  notifyCalledBody: "Token {token} was called. Please go to your room.",
+  notifyStatusTitle: "Queue status updated",
+  notifyStatusBody: "Token {token} status changed. Open SehatFlow for details.",
+  simCallSettingsLegend: "Simulated call demo",
+  simCallSettingsExplain:
+    "Optional demonstration of a call-style alert when your token is called. No real phone call is placed and no phone number is collected.",
+  simCallDemoBanner: "Demonstration only — no real phone call will be placed.",
+  simCallOptIn: "Show a simulated call when my token is called",
+  simCallTitle: "Simulated call",
+  simCallBody: "Demo alert for token {token}: your turn was called.",
+  simCallNoRealCall:
+    "This is not a real phone call. No number was dialed and nothing was sent by SMS.",
+  simCallDismiss: "Close",
   waitIndicatorLabel: "Approximate wait for your token",
   waitEstimateNote: "estimate",
   waitProgressLabel: "Approximate wait remaining",
@@ -81,17 +134,25 @@ export const en = {
     "Registration is not available yet. A later phase will ask for a fictional name, age, and department. Do not enter real medical information.",
   registerNoPhone: "This demonstration does not ask for a phone number.",
   registerDemoOnly:
-    "This is a hackathon demonstration. Enter fictional information only. Do not enter real medical details or real phone numbers.",
+    "Enter fictional details only. Do not enter real medical information or phone numbers.",
   registerSubmit: "Get my token",
   registerSubmitting: "Creating token…",
-  registerLoadError: "Could not load departments.",
-  registerFailed: "Registration failed. No token was created.",
+  registerLoadError: "Could not load departments. Check your connection and try again.",
+  registerFailed: "Registration did not finish. No new token was created. Try again.",
   registerInvalidName: "Enter a fictional name of up to 80 characters.",
   registerInvalidAge: "Enter an age from 0 to 120.",
   registerInvalidGender: "Choose a valid gender option, or leave it blank.",
   registerInvalidDepartment: "Choose an active department.",
-  registerEstimateHint:
-    "After registration you will see an estimated wait. It is an estimate, not a guarantee.",
+  registerInvalidInput: "Check the form fields and try again.",
+  registerNetworkError:
+    "Could not reach the server. Check your connection, then try again.",
+  registerRateLimited: "Too many attempts. Wait a moment, then try again.",
+  registerQueueFull:
+    "That department queue is full right now. Choose another department or try later.",
+  registerUncertain:
+    "We could not confirm registration. Open My Slip or My Turn before trying again.",
+  registerAlreadyHaveSlip: "A slip is already saved in this browser tab.",
+  registerEstimateHint: "You will see an estimated wait on your slip. It is only an estimate.",
   displayNameLabel: "Fictional name",
   ageLabel: "Age",
   genderLabel: "Gender (optional)",
@@ -103,8 +164,7 @@ export const en = {
   myTurnTitle: "My turn",
   myTurnBody:
     "Live queue status is not connected yet. The sample below shows the kind of public information a token will display. It is not a real visit.",
-  myTurnLiveBody:
-    "Enter the token and access code from your slip to see your place in the queue.",
+  myTurnLiveBody: "Enter your token and access code, or scan your slip QR.",
   myTurnCheck: "Check my turn",
   myTurnChecking: "Checking…",
   myTurnInvalidToken: "Enter a token like GM-021.",
@@ -134,13 +194,21 @@ export const en = {
   slipBody:
     "A slip will later show the token, department, room, doctor, and wait. Nothing is issued in this phase.",
   slipMissing: "No slip is saved in this browser tab yet. Register first.",
+  slipEmptyHint:
+    "Register to get a new token slip, or open My Turn if you already have a token and access code.",
+  slipGoRegister: "Register for a token",
+  slipGoMyTurn: "Enter token on My Turn",
+  slipInvalid:
+    "The saved slip in this browser tab is incomplete or damaged. Register again, or use My Turn with your token and access code.",
+  slipRenderError:
+    "Something went wrong while showing this slip. Your token details below may still be usable.",
   slipKeepSafe: "Keep this token and access code. You need both to check My Turn.",
   slipAccessHint:
     "The access code is shown once here and kept in this browser tab only. It is not stored in the address bar.",
   printSlip: "Print slip",
   findTitle: "Find a place",
   findBody:
-    "Choose where you are and where you need to go. Assisted mode uses step-free routes only.",
+    "Choose where you are and where you need to go. Assisted mode uses step-free paths on this demo map.",
   findMapDemoNote:
     "This is a fictional demo map for Nagar Civil Hospital. It is not a real hospital layout.",
   findStartLabel: "You are here",
@@ -155,6 +223,21 @@ export const en = {
   findNoRoute: "No route was found between these places.",
   findNoStepFree:
     "No verified step-free route is available. Please ask reception or the help desk for assistance.",
+  findTryStandardRoute: "Show the standard route (may include stairs)",
+  waitStaleBanner:
+    "Could not refresh status. Showing the last confirmed update — it may be out of date.",
+  boardStaleBanner:
+    "Board could not refresh. Showing the last confirmed tokens — they may be out of date.",
+  confirmCallNextToken: "Call next waiting token {token} in {department}?",
+  confirmCompleteToken: "Mark token {token} in {department} as completed?",
+  confirmNoShowToken: "Mark token {token} in {department} as no-show?",
+  confirmSendToEndToken:
+    "Send token {token} in {department} back to the end of the waiting queue?",
+  confirmReassignToken:
+    "Reassign token {token} from {department} to another department? The patient will get a new token.",
+  actionReassignedDetail: "Reassigned. New token: {token}.",
+  translationReviewNote:
+    "Department labels use demonstration translations. They still need native-speaker review before real-hospital use.",
   findUnknownDestination: "That department is not on this demo map.",
   findLoadingDepartments: "Loading departments…",
   findAskHelp: "Need help finding your way?",
@@ -168,9 +251,61 @@ export const en = {
   findStepFloorChange: "Change from {fromFloor} to {toFloor}.",
   findFloorGround: "Ground floor",
   findFloorFirst: "First floor",
+  findFloorViewLabel: "Map floor view",
+  findFloorViewAll: "Both floors",
+  findStartQuestion: "Where are you right now?",
+  findStartHint:
+    "Choose a landmark on this hospital map, or describe it in your own words. We only use places that exist on the map.",
+  findStartPickLandmark: "Known landmarks",
+  findStartDescribe: "Describe your location (optional)",
+  findStartPlaceholder: "Example: near reception beside the lift",
+  findStartRequired: "Choose or confirm a starting landmark before continuing.",
+  findStartConfirmNeeded:
+    "Several places may match. Confirm one of the suggestions below.",
+  findStartUnrecognized:
+    "That description does not match a known landmark. Please choose one from the list.",
+  findStartConfirmed: "Starting point",
+  findSuggestedStarts: "Suggested starting points",
+  findDestinationQuestion: "Where do you want to go?",
+  findDestinationHint:
+    "Pick a department, or describe it in plain language. Unknown departments are rejected.",
+  findDestinationChoose: "Choose a department",
+  findDestinationDescribe: "Describe the destination (optional)",
+  findDestinationPlaceholder: "Example: eye department",
+  findDestinationRequired: "Choose or confirm a destination before continuing.",
+  findDestinationConfirmNeeded:
+    "Several departments may match. Confirm one of the suggestions below.",
+  findDestinationUnrecognized:
+    "That description does not match a known department. Please choose one from the list.",
+  findDestinationConfirmed: "Destination",
+  findSuggestedDestinations: "Suggested destinations",
+  findSuggestMatches: "Suggest matches",
+  findContinue: "Continue",
+  findShowRoute: "Find route",
+  findChangeStart: "Choose another starting point",
+  findChangeDestination: "Change destination",
+  findDirectionsHeading: "Written directions",
+  findMatcherNote:
+    "Location text is matched with a deterministic landmark list. It is not an AI location service.",
+  findGeoOptional: "Optional: use location permission",
+  findGeoUnavailable: "This browser cannot share location.",
+  findGeoDenied: "Location permission was denied. Choose a landmark instead.",
+  findGeoApproximate:
+    "Phone location cannot pin an indoor spot. Confirm Main Entrance if that is closest, or pick another landmark.",
+  findPathSignature: "Route path",
+  findNaturalStart: "Start at {place} on the {floor}.",
+  findNaturalWalkTo: "Walk to {place}.",
+  findNaturalTurnLeft: "Turn left at {place}.",
+  findNaturalTurnRight: "Turn right at {place}.",
+  findNaturalLift: "Take the lift to the {floor} ({place}).",
+  findNaturalRamp: "Use the ramp to the {floor} ({place}).",
+  findNaturalStairs: "Take the stairs to the {floor} ({place}).",
+  findNaturalArrive: "You have arrived at {place} on the {floor}.",
+  findNaturalSamePlace: "You are already at {place}.",
   navEntrance: "Main entrance",
   navReception: "Registration / reception",
   navHelpDesk: "Help desk",
+  navWaterStation: "Water station",
   navCorridorGround: "Ground-floor corridor",
   navClinicWingGround: "Ground-floor clinic wing",
   navCorridorFirst: "First-floor corridor",
@@ -189,8 +324,32 @@ export const en = {
   emergencyImmediate:
     "If this is severe or could be life-threatening, go to Emergency immediately.",
   emergencyLead: "Any of these? Go to Emergency now.",
+  emergencyNotAdvice:
+    "This screen gives safety guidance only. It is not a medical diagnosis, AI triage, or treatment advice.",
   noToken: "You don't need a token.",
   tellStaff: "Tell nearby hospital staff if you need urgent help.",
+  helpRequestTitle: "Ask hospital staff for help",
+  helpRequestBody:
+    "Use this if you need a staff member to come assist you in the waiting area. This is not a phone call to Emergency.",
+  helpRequestDistinction:
+    "A help request alerts staff. It is not an emergency call number and it does not create or move a queue token.",
+  helpRequestNotEmergency:
+    "If someone may be in immediate danger, call 112 or 108, or go to Emergency and tell nearby staff now.",
+  helpRequestSubmit: "Request staff help",
+  helpRequestSubmitting: "Sending help request…",
+  helpRequestPending:
+    "Help request sent. Staff have not acknowledged it yet. Stay nearby and tell a staff member in person if you still need help.",
+  helpRequestAcknowledged: "A staff member has acknowledged your help request.",
+  helpRequestReuseHint:
+    "Tapping again will not create a second open request for this browser tab.",
+  helpRequestResendSafe: "Request already open — tap to confirm",
+  helpRequestError: "Could not send the help request. Try again or ask staff in person.",
+  helpRequestUnavailable:
+    "Help requests need a configured hospital connection. Ask nearby staff for help in person.",
+  helpRequestGeneralDesk: "General help desk",
+  staffUrgentNeedsAttention: "{count} help request(s) need attention",
+  urgentNoQueueChange: "Acknowledging does not change the routine queue order.",
+  urgentAckRestricted: "Your role can view this request but cannot acknowledge it.",
   signsTitle: "Warning signs",
   signChestPain: "Chest pain",
   signBreathing: "Trouble breathing",
@@ -222,7 +381,69 @@ export const en = {
   forecastTitle: "Demand forecast",
   notImplemented: "Not implemented",
   forecastBody:
-    "The OPD demand forecast is not built yet. This page does not show predictions and is not connected to a real hospital.",
+    "Staff-only synthetic OPD demand forecast for demonstration. Not connected to live hospital traffic.",
+  forecastSyntheticBanner:
+    "Synthetic demonstration data — not live hospital activity.",
+  forecastSyntheticPeriod:
+    "Synthetic history {start} to {end}. Next-horizon forecast: {horizon} hours.",
+  forecastDemoPurpose:
+    "These charts demonstrate a modelling workflow only. They are not operational hospital recommendations.",
+  forecastOverviewTitle: "Demand overview",
+  forecastSimpleTitle: "Busy days at a glance",
+  forecastSimpleHint:
+    "A simple weekday average from synthetic history — easiest way to see which days are usually busiest or quietest.",
+  forecastBusiestDay: "Usually busiest",
+  forecastLeastBusyDay: "Usually quietest",
+  forecastAvgPerDay: "About {count} arrivals per day on average",
+  forecastDayRankTitle: "Average demand by day of week",
+  forecastSimpleMethod:
+    "Method: average total arrivals for each weekday across {days} synthetic days. Not live hospital traffic.",
+  weekdayMonday: "Monday",
+  weekdayTuesday: "Tuesday",
+  weekdayWednesday: "Wednesday",
+  weekdayThursday: "Thursday",
+  weekdayFriday: "Friday",
+  weekdaySaturday: "Saturday",
+  weekdaySunday: "Sunday",
+  forecastDepartmentFilter: "Department",
+  forecastAllDepartments: "All departments",
+  forecastPeakLabel:
+    "Predicted peak (model): {department} at {hour} with about {count} arrivals.",
+  forecastByDepartment: "Next-horizon demand by department (model)",
+  forecastNextHours: "Next-horizon demand by hour (model)",
+  forecastSlotDetails: "Upcoming hourly slots",
+  forecastHour: "Hour",
+  forecastDepartment: "Department",
+  forecastModel: "Model forecast",
+  forecastBaseline: "Baseline forecast",
+  forecastEvalTitle: "Model evaluation",
+  forecastLowerBetter: "Lower MAE and RMSE are better (patients per hour).",
+  forecastEvalPeriod:
+    "Held-out synthetic period {start} to {end} ({n} hourly department samples).",
+  forecastModelMae: "Model MAE",
+  forecastBaselineMae: "Baseline MAE",
+  forecastModelRmse: "Model RMSE",
+  forecastBaselineRmse: "Baseline RMSE",
+  forecastModelBetter:
+    "On this held-out set the model MAE is about {pct}% lower than the seasonal baseline.",
+  forecastBaselineBetter:
+    "On this held-out set the seasonal baseline MAE is about {pct}% lower than the model.",
+  forecastPerDepartment: "Per-department held-out MAE",
+  forecastHeldoutTitle: "Held-out comparison",
+  forecastHeldoutHint:
+    "Actual synthetic counts versus model and baseline predictions on the held-out period (recent window).",
+  forecastActual: "Actual (synthetic)",
+  forecastLimitsTitle: "Limitations",
+  forecastLimitSynthetic: "All traffic counts are synthetic demonstration data.",
+  forecastLimitPatterns:
+    "Synthetic patterns may not match real hospital demand.",
+  forecastLimitRealData:
+    "A real deployment would need validated, governed historical aggregate data and ongoing monitoring.",
+  forecastLimitNoClinical:
+    "Forecasts must not be used to deny care, triage patients, reorder the routine queue, or make clinical decisions.",
+  forecastSeedNote: "Reproducible seed {seed}. Regenerate with forecasting/run_pipeline.py.",
+  forecastMissingArtifact: "Forecast artifacts are missing. Run the forecasting pipeline.",
+  forecastCorruptArtifact: "Forecast artifacts look corrupt. Regenerate them before relying on this page.",
   boardTitle: "Now serving",
   boardStatus: "The live board is not connected yet.",
   boardPrivacy: "Patient names and phone numbers are never shown on this screen.",
@@ -250,7 +471,7 @@ export const en = {
   registrarReadOnly:
     "Registrar accounts can read the queue for counter work. Queue changes need a queue manager, doctor, or admin.",
   urgentTitle: "Urgent help flags",
-  urgentEmpty: "No open urgent flags. Patient help requests will appear here later.",
+  urgentEmpty: "No open help requests right now.",
   urgentOpen: "Open",
   acknowledge: "Acknowledge",
   nowServing: "Now serving",
@@ -302,4 +523,97 @@ export const en = {
   boardEmpty: "No active departments to display.",
   boardNext: "Next",
   boardClock10x: "Demo clock is running at 10×.",
+  voiceTitle: "Voice assistant",
+  voiceHint:
+    "Hold the microphone only while you speak. Ask about your token, wait time, a department, or directions. Emergency help never needs the microphone.",
+  voiceStart: "Start recording",
+  voiceStop: "Stop recording",
+  voiceCancel: "Cancel",
+  voiceRetry: "Try again",
+  voiceReplay: "Replay answer",
+  voiceStopPlayback: "Stop playback",
+  voiceRecording: "Recording… tap stop when finished",
+  voiceProcessing: "Working on your question…",
+  voiceListening: "Heard your question",
+  voiceAnswerLabel: "Answer",
+  voiceTranscriptLabel: "You said",
+  voiceMicDenied:
+    "Microphone permission was denied. You can still use My Turn, Find, and Emergency without voice.",
+  voiceUnavailable:
+    "Voice assistance is not available for this language yet. Use the buttons on this screen, or change language in Settings.",
+  voiceServiceError:
+    "Voice assistance is temporarily unavailable. Continue with the normal app buttons.",
+  voiceTimeout: "The voice service took too long. Try again or continue without voice.",
+  voiceRateLimited: "Too many voice requests. Wait a moment, then try again.",
+  voiceBadAudio: "That recording could not be used. Try a short clear question.",
+  voiceTooLong: "Keep recordings under 15 seconds.",
+  voiceUnsupported:
+    "I can help with your token, wait time, department locations, hospital directions, or emergency guidance. Try one of those.",
+  voiceNeedMyTurn:
+    "Open My Turn first with your token and access code, or scan your slip QR.",
+  voiceWaitUnavailable: "Wait time is not available right now.",
+  voiceUnknownDepartment: "That department is not on this hospital map.",
+  voiceAnswerToken:
+    "Token {token}. {status}. About {minutes} minutes left. {ahead} ahead.",
+  voiceAnswerTokenNoWait: "Token {token}. Status: {status}.",
+  voiceAnswerTokenCalled: "Token {token} is called. Go to {room} now.",
+  voiceAnswerTokenDone: "Token {token} is completed.",
+  voiceAnswerWait: "About {minutes} minutes left. {ahead} people ahead.",
+  voiceAnswerDepartment: "{department}: room {room}, {floor}.",
+  agentRouteMore: "Open Find for full directions.",
+  voiceTextOnlyFallback:
+    "Spoken audio is not available in this language. Read the answer below.",
+  voiceGoEmergency: "Open Emergency",
+  voiceContinueApp: "Continue without voice",
+  voiceNoSpeech: "Could not understand. Try a short clear question.",
+  voiceOpenMyTurn: "Open My Turn",
+  voiceAnswerAppHelp:
+    "I can register you, check your token and wait, list departments, give directions, or open Emergency. I do not give medical advice.",
+  voiceAnswerRegistrationHelp:
+    "Say your department, name, and age. I will register you and give a real token.",
+  assistantFabLabel: "Ask SehatFlow",
+  assistantFabHint: "Need help?",
+  assistantDialogTitle: "SehatFlow",
+  assistantDialogIntro:
+    "Ask about your token, wait, registration, directions, or Emergency.",
+  assistantClose: "Close",
+  assistantTextLabel: "Message",
+  assistantTextPlaceholder: "Message SehatFlow…",
+  assistantSend: "Send",
+  assistantOpenRegister: "Open Register",
+  askAi: "Ask SehatFlow",
+  askAiHint: "Ask about your token, wait, registration, or directions.",
+  askAiNav: "Ask SehatFlow",
+  agentAskName: "What name should appear on the registration slip?",
+  agentAskAge: "What is your age in years?",
+  agentAskDepartment: "Which department do you want to register for?",
+  agentAskDestination: "Which department or place do you need directions to?",
+  agentNeedTokenContext:
+    "I need your slip first. Open My Turn or scan your QR. I will not guess another patient's token.",
+  agentClarifyRegister: "Tell me the department, your name, and age.",
+  agentRegistered: "Done. Your token is {token}.",
+  agentRegisterFailed: "Registration failed. No token was created. Try again.",
+  agentDepartmentsPrefix: "Departments:",
+  agentNavigated: "Opening {place}.",
+  agentUnsupportedAction:
+    "I can check your token or wait, register you, list departments, give directions, or open My Turn, Slip, Find, or Emergency.",
+  assistantOpenSlip: "Open My Slip",
+  voiceConversationTitle: "Live voice conversation",
+  voiceConversationHint: "Tap the ball to talk. Tap again to interrupt.",
+  voiceStartConversation: "Start voice conversation",
+  voiceEndConversation: "End voice session",
+  voiceMuteMic: "Mute microphone",
+  voiceUnmuteMic: "Unmute microphone",
+  voiceInterrupt: "Stop speaking",
+  voicePartialLabel: "Hearing you",
+  voiceStateIdle: "Microphone off — tap Start voice conversation",
+  voiceStateConnecting: "Connecting…",
+  voiceStateListening: "Listening",
+  voiceStateRecognizing: "Recognizing…",
+  voiceStateThinking: "Thinking…",
+  voiceStateSpeaking: "Speaking…",
+  voiceStateInterrupted: "Interrupted",
+  voiceStateMuted: "Microphone muted",
+  voiceStateReconnecting: "Reconnecting…",
+  voiceStateError: "Voice session error",
 } satisfies MessageCatalog

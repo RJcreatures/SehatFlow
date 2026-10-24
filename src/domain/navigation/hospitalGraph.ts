@@ -9,6 +9,7 @@ const nodes: NavNode[] = [
   { id: "reception", floor: 0, x: 120, y: 170, labelKey: "navReception" },
   { id: "help_desk", floor: 0, x: 280, y: 170, labelKey: "navHelpDesk" },
   { id: "corridor_g_main", floor: 0, x: 200, y: 140, labelKey: "navCorridorGround" },
+  { id: "water_station", floor: 0, x: 250, y: 115, labelKey: "navWaterStation" },
   { id: "corridor_g_clinic", floor: 0, x: 300, y: 90, labelKey: "navClinicWingGround" },
   { id: "lift_g", floor: 0, x: 60, y: 140, labelKey: "navLift" },
   { id: "ramp_g", floor: 0, x: 60, y: 90, labelKey: "navRamp" },
@@ -93,7 +94,22 @@ const edges: NavEdge[] = [
   ...undirected("e_entrance_main", "entrance", "corridor_g_main", 25, "corridor", true),
   ...undirected("e_main_reception", "corridor_g_main", "reception", 20, "corridor", true),
   ...undirected("e_main_help", "corridor_g_main", "help_desk", 20, "corridor", true),
-  ...undirected("e_main_clinic", "corridor_g_main", "corridor_g_clinic", 30, "corridor", true),
+  ...undirected(
+    "e_main_water",
+    "corridor_g_main",
+    "water_station",
+    15,
+    "corridor",
+    true,
+  ),
+  ...undirected(
+    "e_water_clinic",
+    "water_station",
+    "corridor_g_clinic",
+    15,
+    "corridor",
+    true,
+  ),
   ...undirected(
     "e_clinic_gm",
     "corridor_g_clinic",
@@ -166,5 +182,12 @@ export function departmentDestinationId(
 }
 
 export function startPointOptions(graph: HospitalGraph = hospitalGraph) {
-  return ["entrance", "reception", "help_desk"].filter((id) => graph.nodes[id])
+  return [
+    "entrance",
+    "reception",
+    "help_desk",
+    "lift_g",
+    "ramp_g",
+    "water_station",
+  ].filter((id) => graph.nodes[id])
 }

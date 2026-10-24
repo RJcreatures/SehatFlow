@@ -1,4 +1,6 @@
-# SahaayOPD
+# SehatFlow
+
+Health in your flow.
 
 Fictional government-hospital outpatient queue for a hackathon demonstration. The hospital in this demo is Nagar Civil Hospital. Nothing here is connected to a real hospital.
 
@@ -49,7 +51,7 @@ Copy `.env.example` to `.env` only on your machine.
 | --- | --- |
 | `VITE_SUPABASE_URL` | Browser. Project URL only. |
 | `VITE_SUPABASE_PUBLISHABLE_KEY` | Browser. Publishable key, or the legacy anon key. |
-| `SARVAM_API_KEY` | Not used yet. Future server function only. |
+| `SARVAM_API_KEY` | Server only. Supabase Edge Function `voice-assist` reads `Deno.env.get("SARVAM_API_KEY")`. Never use a `VITE_` prefix. |
 
 Never put a `service_role` key, secret key, or database password in a `VITE_` variable. The client refuses privileged keys.
 
@@ -157,14 +159,25 @@ None of these was run against a hosted project from this workspace.
 
 - Supabase PostgreSQL holds the shared queue, with Realtime for staff and a sanitized board RPC for the waiting room.
 - The Vite app is planned for Vercel. `vercel.json` rewrites deep links to `index.html`.
-- Sarvam voice, when added, will use a server-side proxy. That is not part of this phase.
+- Sarvam voice uses the `voice-assist` Edge Function as a server-side proxy (`SARVAM_API_KEY` secret only). Deploy that function and set the secret before live voice works.
+
+## Phase 7 voice (local setup)
+
+1. Obtain a Sarvam API key from the Sarvam dashboard (never commit it).
+2. Set Edge secrets:
+   `npx supabase secrets set SARVAM_API_KEY=your_key`
+   Optional: `npx supabase secrets set VOICE_TICKET_SECRET=long-random-string`
+3. Deploy when ready:
+   `npx supabase functions deploy voice-assist`
+   `npx supabase functions deploy voice-realtime`
+4. Patient UI: open **Ask SehatFlow** → **Start voice conversation** (mic only after that tap), or type below.
 
 ## Current limitations
 
-- QR scanning, indoor navigation, patient urgent-help UI, Sarvam, phone calls, and forecasting are not implemented.
-- `/staff/forecast` remains marked not implemented.
-- Hosted end-to-end registration is only verified after the vault migration and Edge Functions are deployed.
-- English and Hindi cover the UI strings used in Phases 1–4.
+- Live Sarvam STT/TTS is not exercised in CI; unit tests mock the provider.
+- Urdu has speech input and text answers; Bulbul TTS has no `ur-IN` code, so answers are text-only.
+- `/staff/forecast` remains marked not implemented (Phase 8+).
+- Hosted end-to-end registration and voice work only after migrations, Edge Functions, and secrets are deployed.
 
 ## Safety
 

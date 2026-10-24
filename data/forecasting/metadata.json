@@ -2,7 +2,7 @@
   "label": "Synthetic demonstration data \u2014 not live hospital activity.",
   "version": "forecast-v1.1",
   "seed": 20261024,
-  "generated_at_utc": "2026-10-24T08:20:17.349733Z",
+  "generated_at_utc": "2026-10-24T09:50:06.701317Z",
   "history_start": "2026-06-26",
   "history_end": "2026-10-23",
   "history_days": 120,

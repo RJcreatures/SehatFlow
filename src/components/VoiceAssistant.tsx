@@ -596,7 +596,7 @@ export function VoiceAssistant({
           </Link>
         ) : null}
         {needsMyTurn ? (
-          <Link className="button button-secondary" to="/my-turn">
+          <Link className="button button-secondary" to="/slip">
             {messages.voiceOpenMyTurn}
           </Link>
         ) : null}

@@ -11,9 +11,24 @@ export {
   startPointOptions,
 } from "./hospitalGraph.ts"
 export {
+  LANDMARK_CATALOG,
+  landmarkLabel,
+  popularDestinationIds,
+  routableDestinationIds,
+  routableStartIds,
+} from "./landmarkCatalog.ts"
+export {
   matchDepartmentText,
+  matchDestinationText,
   matchLandmarkText,
 } from "./locationMatch.ts"
+export {
+  getCompassSupport,
+  getGeolocationSupport,
+  INDOOR_GEO_MAPPING_CONFIGURED,
+  mapGeoToIndoorNode,
+  requestBrowserLocation,
+} from "./sensors.ts"
 export {
   buildNaturalDirections,
   hopsMatchPath,

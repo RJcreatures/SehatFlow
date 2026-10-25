@@ -38,15 +38,16 @@ export function OnboardingFlow() {
         <div className="stack-gap" role="group" aria-labelledby="onboarding-language">
           <h2 id="onboarding-language">{messages.onboardingLanguageTitle}</h2>
           <p>{messages.chooseLanguageHint}</p>
-          <div className="choice-row onboarding-choices">
+          <div className="language-grid" role="list">
             {readyLanguages().map((language) => (
               <button
                 key={language.id}
                 type="button"
+                role="listitem"
                 className={
                   preferences.language === language.id
-                    ? "choice is-selected"
-                    : "choice"
+                    ? "choice language-chip is-selected"
+                    : "choice language-chip"
                 }
                 onClick={() => setLanguage(language.id)}
               >

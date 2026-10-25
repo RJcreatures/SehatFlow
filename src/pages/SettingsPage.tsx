@@ -63,18 +63,23 @@ export function SettingsPage() {
       <form className="settings-form">
         <fieldset className="settings-group">
           <legend>{messages.language}</legend>
-          {readyLanguages().map((language) => (
-            <label className="radio-row" key={language.id}>
-              <input
-                type="radio"
-                name="language"
-                value={language.id}
-                checked={preferences.language === language.id}
-                onChange={() => setLanguage(language.id)}
-              />
-              <span>{language.nativeName}</span>
-            </label>
-          ))}
+          <div className="language-grid" role="list">
+            {readyLanguages().map((language) => (
+              <button
+                key={language.id}
+                type="button"
+                role="listitem"
+                className={
+                  preferences.language === language.id
+                    ? "choice language-chip is-selected"
+                    : "choice language-chip"
+                }
+                onClick={() => setLanguage(language.id)}
+              >
+                {language.nativeName}
+              </button>
+            ))}
+          </div>
         </fieldset>
         <fieldset className="settings-group">
           <legend>{messages.textSize}</legend>

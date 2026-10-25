@@ -15,6 +15,9 @@ const DEPT_MESSAGE_KEYS = {
   ent: "navDeptEnt",
   ophthalmology: "navDeptOphthalmology",
   dermatology: "navDeptDermatology",
+  cardiology: "navDeptCardiology",
+  dental: "navDeptDental",
+  physiotherapy: "navDeptPhysiotherapy",
 } as const satisfies Record<string, keyof MessageCatalog>
 
 export type DepartmentNameFields = {

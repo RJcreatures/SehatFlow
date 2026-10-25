@@ -1,4 +1,5 @@
 import { appConfig } from "../config/hospital.ts"
+import { createOpaqueId } from "../lib/id.ts"
 
 export type StoredHelpRequest = {
   requestKey: string
@@ -11,9 +12,9 @@ export type StoredHelpRequest = {
 const storageKey = `${appConfig.storageKey}.helpRequest`
 
 export function createHelpRequestKey(
-  randomUUID: () => string = () => crypto.randomUUID(),
+  createId: () => string = createOpaqueId,
 ): string {
-  return randomUUID().replaceAll("-", "")
+  return createId().replaceAll("-", "")
 }
 
 export function loadHelpRequest(): StoredHelpRequest | null {

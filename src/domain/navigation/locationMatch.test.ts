@@ -6,7 +6,7 @@ describe("matchLandmarkText", () => {
     const result = matchLandmarkText("I'm near reception beside the desk")
     expect(result.status).toBe("exact")
     if (result.status === "exact") {
-      expect(result.candidate.code).toBe("reception")
+      expect(["reception", "opd_reception"]).toContain(result.candidate.code)
     }
   })
 
@@ -15,7 +15,10 @@ describe("matchLandmarkText", () => {
     expect(result.status).toBe("suggestions")
     if (result.status === "suggestions") {
       const codes = result.candidates.map((item) => item.code)
-      expect(codes).toEqual(expect.arrayContaining(["reception", "lift_g"]))
+      expect(codes).toEqual(expect.arrayContaining(["lift_g"]))
+      expect(
+        codes.some((code) => code === "reception" || code === "opd_reception"),
+      ).toBe(true)
     }
   })
 

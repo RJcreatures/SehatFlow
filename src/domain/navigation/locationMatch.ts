@@ -1,3 +1,8 @@
+import {
+  LANDMARK_CATALOG,
+  routableDestinationIds,
+  routableStartIds,
+} from "./landmarkCatalog.ts"
 import { hospitalGraph } from "./hospitalGraph.ts"
 
 export type MatchKind = "landmark" | "department"
@@ -17,115 +22,11 @@ export type LocationMatchResult =
   | { status: "none" }
 
 /** Known landmark pickers shown on /find (must exist in the graph). */
-export const SELECTABLE_START_LANDMARKS = [
-  "entrance",
-  "reception",
-  "help_desk",
-  "lift_g",
-  "ramp_g",
-  "water_station",
-] as const
+export const SELECTABLE_START_LANDMARKS = routableStartIds()
 
-const LANDMARK_ALIASES: Record<string, string[]> = {
-  entrance: [
-    "entrance",
-    "main entrance",
-    "gate",
-    "front door",
-    "entry",
-    "प्रवेश",
-    "मुख्य द्वार",
-    "गेट",
-  ],
-  reception: [
-    "reception",
-    "registration",
-    "counter",
-    "desk",
-    "रिसेप्शन",
-    "पंजीकरण",
-    "काउंटर",
-  ],
-  help_desk: [
-    "help desk",
-    "helpdesk",
-    "information",
-    "info desk",
-    "हेल्प डेस्क",
-    "जानकारी",
-  ],
-  lift_g: ["lift", "elevator", "लिफ्ट", "elevator near entrance"],
-  ramp_g: ["ramp", "accessible ramp", "रैंप", "wheelchair ramp"],
-  water_station: [
-    "water",
-    "water station",
-    "drinking water",
-    "cooler",
-    "पानी",
-    "पानी का स्थान",
-  ],
-  stairs_g: ["stairs", "staircase", "सीढ़ी", "सीढ़ियाँ"],
-  corridor_g_main: ["main corridor", "central corridor", "गलियारा", "मुख्य गलियारा"],
-  corridor_g_clinic: ["clinic wing", "clinic corridor", "क्लिनिक"],
-  corridor_f_main: ["first floor corridor", "पहली मंज़िल गलियारा"],
-}
-
-const DEPARTMENT_ALIASES: Record<string, string[]> = {
-  general_medicine: [
-    "general medicine",
-    "medicine",
-    "gm",
-    "doctor",
-    "opd",
-    "सामान्य चिकित्सा",
-    "मेडिसिन",
-  ],
-  pediatrics: [
-    "pediatrics",
-    "paediatrics",
-    "children",
-    "child",
-    "kids",
-    "बाल",
-    "बच्चे",
-  ],
-  womens_health: [
-    "women",
-    "women's health",
-    "womens health",
-    "gynae",
-    "gynecology",
-    "महिला",
-    "स्त्री",
-  ],
-  orthopedics: [
-    "orthopedics",
-    "orthopaedics",
-    "bones",
-    "joints",
-    "fracture",
-    "हड्डी",
-    "जोड़",
-  ],
-  ent: ["ent", "ear", "nose", "throat", "कान", "नाक", "गला"],
-  ophthalmology: [
-    "eye",
-    "eyes",
-    "ophthalmology",
-    "vision",
-    "नेत्र",
-    "आँख",
-    "आंख",
-  ],
-  dermatology: [
-    "skin",
-    "dermatology",
-    "rash",
-    "skin problems",
-    "त्वचा",
-    "चमड़ी",
-  ],
-}
+const ALIAS_BY_ID: Record<string, readonly string[]> = Object.fromEntries(
+  LANDMARK_CATALOG.map((entry) => [entry.id, entry.aliases]),
+)
 
 export function normalizeMatchText(value: string): string {
   return value
@@ -143,13 +44,11 @@ function hasWholeToken(haystack: string, needle: string): boolean {
   if (haystack === needle) {
     return true
   }
-  // Prefer whole-token matches so short aliases like "ent" do not hit inside
-  // "department", and "ear" does not hit inside longer words.
   const escaped = needle.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
   return new RegExp(`(?:^|\\s)${escaped}(?:\\s|$)`, "u").test(haystack)
 }
 
-function scoreAliases(normalized: string, aliases: string[]): {
+function scoreAliases(normalized: string, aliases: readonly string[]): {
   score: number
   hit: string[]
 } {
@@ -170,7 +69,6 @@ function scoreAliases(normalized: string, aliases: string[]): {
       hit.push(alias)
       continue
     }
-    // Longer phrases may still match when the user typed a shorter form.
     if (needle.length >= 6 && hasWholeToken(needle, normalized)) {
       score = Math.max(score, 65)
       hit.push(alias)
@@ -193,8 +91,7 @@ function scoreAliases(normalized: string, aliases: string[]): {
 }
 
 /**
- * Deterministic landmark/destination matcher.
- * Not an AI model — returns only IDs that exist in the configured graph/department list.
+ * Deterministic landmark matcher — returns only IDs that exist in the graph.
  */
 export function matchLandmarkText(
   text: string,
@@ -210,7 +107,7 @@ export function matchLandmarkText(
     if (!hospitalGraph.nodes[id]) {
       continue
     }
-    const aliases = LANDMARK_ALIASES[id] ?? [id.replaceAll("_", " ")]
+    const aliases = ALIAS_BY_ID[id] ?? [id.replaceAll("_", " ")]
     const { score, hit } = scoreAliases(normalized, aliases)
     if (score >= 30) {
       candidates.push({
@@ -226,27 +123,32 @@ export function matchLandmarkText(
   return finalizeCandidates(candidates)
 }
 
-export function matchDepartmentText(
+/**
+ * Match a To destination: clinical departments and shared landmarks.
+ * Never silently picks an unrelated place — ambiguous matches stay as suggestions.
+ */
+export function matchDestinationText(
   text: string,
-  activeCodes: readonly string[],
+  destinationIds: readonly string[] = routableDestinationIds(),
 ): LocationMatchResult {
   const normalized = normalizeMatchText(text)
   if (!normalized) {
     return { status: "none" }
   }
 
-  const allowed = new Set(activeCodes)
+  const allowed = new Set(destinationIds)
   const candidates: LocationMatchCandidate[] = []
-  for (const [code, aliases] of Object.entries(DEPARTMENT_ALIASES)) {
-    if (!allowed.has(code)) {
+  for (const entry of LANDMARK_CATALOG) {
+    if (!allowed.has(entry.id) || !hospitalGraph.nodes[entry.id]) {
       continue
     }
-    const { score, hit } = scoreAliases(normalized, aliases)
+    const { score, hit } = scoreAliases(normalized, entry.aliases)
     if (score >= 30) {
+      const dept = hospitalGraph.nodes[entry.id]?.departmentCode
       candidates.push({
-        id: `dept_${code}`,
-        kind: "department",
-        code,
+        id: entry.id,
+        kind: dept ? "department" : "landmark",
+        code: dept ?? entry.id,
         score,
         aliasesHit: hit,
       })
@@ -254,6 +156,22 @@ export function matchDepartmentText(
   }
 
   return finalizeCandidates(candidates)
+}
+
+/** @deprecated Prefer matchDestinationText for To-field search. */
+export function matchDepartmentText(
+  text: string,
+  activeCodes: readonly string[],
+): LocationMatchResult {
+  const ids = activeCodes
+    .map((code) => {
+      const node = Object.values(hospitalGraph.nodes).find(
+        (item) => item.departmentCode === code,
+      )
+      return node?.id
+    })
+    .filter((id): id is string => Boolean(id))
+  return matchDestinationText(text, ids)
 }
 
 function finalizeCandidates(
@@ -265,8 +183,6 @@ function finalizeCandidates(
   }
   const top = ranked[0]!
   const close = ranked.filter((item) => item.score >= top.score - 15)
-  // A single clear winner is enough to auto-select; the UI still shows the
-  // confirmed landmark before routing. Ambiguous ties still need confirmation.
   if (close.length === 1 && top.score >= 55) {
     return { status: "exact", candidate: top }
   }

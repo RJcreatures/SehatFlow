@@ -168,6 +168,7 @@ export type MessageCatalog = {
   slipEmptyHint: string
   slipGoRegister: string
   slipGoMyTurn: string
+  slipRecoverSubmit: string
   slipInvalid: string
   slipRenderError: string
   slipKeepSafe: string
@@ -175,9 +176,33 @@ export type MessageCatalog = {
   printSlip: string
   findTitle: string
   findBody: string
+  findWhereGoing: string
   findMapDemoNote: string
   findStartLabel: string
   findDestinationLabel: string
+  findFromLabel: string
+  findToLabel: string
+  findSwap: string
+  findPopularDestinations: string
+  findCategoryEntrance: string
+  findCategoryShared: string
+  findCategoryClinical: string
+  findCurrentInstruction: string
+  findNextLandmark: string
+  findRemainingSteps: string
+  findResetMap: string
+  findZoomIn: string
+  findZoomOut: string
+  findCompass: string
+  findCompassUnavailable: string
+  findCompassDenied: string
+  findOrientMap: string
+  findNorthIndicator: string
+  findGeoWhy: string
+  findGeoNoIndoor: string
+  findGeoInaccurate: string
+  findGeoTimeout: string
+  findStepOf: string
   findAssistedLabel: string
   findAssistedHint: string
   findStandardLabel: string
@@ -237,6 +262,7 @@ export type MessageCatalog = {
   findShowRoute: string
   findChangeStart: string
   findChangeDestination: string
+  findChangeRoute: string
   findDirectionsHeading: string
   findMatcherNote: string
   findGeoOptional: string
@@ -254,8 +280,20 @@ export type MessageCatalog = {
   findNaturalArrive: string
   findNaturalSamePlace: string
   navEntrance: string
+  navOpdEntrance: string
+  navSecurityDesk: string
+  navRegistration: string
+  navOpdReception: string
   navReception: string
   navHelpDesk: string
+  navWaitingArea: string
+  navWashroom: string
+  navPharmacy: string
+  navBilling: string
+  navLaboratory: string
+  navRadiology: string
+  navBloodCollection: string
+  navExit: string
   navWaterStation: string
   navCorridorGround: string
   navClinicWingGround: string
@@ -270,6 +308,9 @@ export type MessageCatalog = {
   navDeptEnt: string
   navDeptOphthalmology: string
   navDeptDermatology: string
+  navDeptCardiology: string
+  navDeptDental: string
+  navDeptPhysiotherapy: string
   helpDesk: string
   emergencyTitle: string
   emergencyImmediate: string
@@ -385,6 +426,11 @@ export type MessageCatalog = {
   staffSignInHint: string
   staffNoSignup: string
   staffStale: string
+  staffQrScanOpen: string
+  staffQrScanTitle: string
+  staffQrScanHint: string
+  staffQrIdentified: string
+  staffQrInvalid: string
   emailLabel: string
   passwordLabel: string
   signIn: string

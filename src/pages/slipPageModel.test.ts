@@ -30,14 +30,14 @@ describe("slip page model behaviour", () => {
       windowOrigin: "http://localhost:5174",
     })
     const scanUrl = buildQrScanUrl(origin, validSlip.qr_token)
-    expect(scanUrl).toContain("/my-turn?q=")
+    expect(scanUrl).toContain("/staff?q=")
     expect(scanUrl).toContain(validSlip.qr_token)
     expect(scanUrl.includes(validSlip.access_code)).toBe(false)
   })
 
   it("keeps empty-state navigation targets stable", () => {
     expect("/register").toMatch(/^\/register$/)
-    expect("/my-turn").toMatch(/^\/my-turn$/)
+    expect("/slip").toMatch(/^\/slip$/)
   })
 
   it("rejects incomplete slip payloads used for display", () => {

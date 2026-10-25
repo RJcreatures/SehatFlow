@@ -5,6 +5,7 @@ import { EmergencyBar } from "./EmergencyBar.tsx"
 import { GlobalAssistant } from "./GlobalAssistant.tsx"
 import { OnboardingFlow } from "./OnboardingFlow.tsx"
 import { PatientBottomNav } from "./PatientBottomNav.tsx"
+import { RenderErrorBoundary } from "./RenderErrorBoundary.tsx"
 import { WaitIndicator } from "./WaitIndicator.tsx"
 
 export function PatientLayout() {
@@ -45,7 +46,23 @@ export function PatientLayout() {
       </header>
       {showPatientChrome ? <WaitIndicator /> : null}
       <main id="main" className="main">
-        {showOnboarding ? <OnboardingFlow /> : <Outlet />}
+        <RenderErrorBoundary
+          fallback={(_error, retry) => (
+            <section className="panel" role="alert">
+              <p>{messages.slipRenderError}</p>
+              <div className="choice-row">
+                <button type="button" className="button" onClick={retry}>
+                  {messages.qrRetry}
+                </button>
+                <Link className="button button-secondary" to="/">
+                  {messages.home}
+                </Link>
+              </div>
+            </section>
+          )}
+        >
+          {showOnboarding ? <OnboardingFlow /> : <Outlet />}
+        </RenderErrorBoundary>
       </main>
       {showPatientChrome ? <PatientBottomNav /> : null}
       <GlobalAssistant />

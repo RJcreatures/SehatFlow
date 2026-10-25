@@ -15,21 +15,20 @@ describe("Stage 2 reliability fixes", () => {
     const wait = readFileSync(join(root, "components/WaitIndicator.tsx"), "utf8")
     expect(wait).toContain("waitStaleBanner")
     expect(wait).toContain("setStale(true)")
-    const myTurn = readFileSync(join(root, "pages/MyTurnPage.tsx"), "utf8")
-    expect(myTurn).toContain("WAIT_POLL_MS")
+    const slip = readFileSync(join(root, "pages/SlipPage.tsx"), "utf8")
+    expect(slip).toContain("WAIT_POLL_MS")
     const board = readFileSync(join(root, "pages/BoardPage.tsx"), "utf8")
     expect(board).toContain("boardStaleBanner")
   })
 
   it("keeps Find map path aligned with written directions without mismatched hop numbers", () => {
     const map = readFileSync(join(root, "components/HospitalMap.tsx"), "utf8")
-    expect(map).not.toContain("hospital-map-step")
-    expect(map).toContain("corridor_g_main")
+    expect(map).toContain("hospital-map-route-line")
+    expect(map).toContain("route.path")
     const find = readFileSync(join(root, "pages/FindPage.tsx"), "utf8")
-    expect(find).toContain("findMapDemoNote")
-    expect(find).toContain("findTryStandardRoute")
-    expect(find).toContain("localizedDepartmentName")
-    expect(find).toContain("room_en")
+    expect(find).toContain("findWhereGoing")
+    expect(find).toContain("findShowRoute")
+    expect(find).toContain("routePathSignature")
   })
 
   it("guards staff actions until refresh finishes and names the token in confirms", () => {

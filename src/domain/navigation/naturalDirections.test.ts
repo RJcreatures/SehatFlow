@@ -17,7 +17,7 @@ describe("natural directions and shared path", () => {
       return
     }
     const lines = buildNaturalDirections(en, hospitalGraph, route)
-    expect(lines[0]).toMatch(/Reception|reception/i)
+    expect(lines[0]).toMatch(/Reception|reception|Registration/i)
     expect(lines.some((line) => /lift/i.test(line))).toBe(true)
     expect(lines.at(-1)).toMatch(/arrived|Eyes|ophthalmology|Room 25/i)
     expect(hopsMatchPath(route.hops, route.path)).toBe(true)

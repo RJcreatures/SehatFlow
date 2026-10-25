@@ -20,6 +20,7 @@ import {
   registerPatient,
   type RegisterPatientResponse,
 } from "../lib/supabase/patientApi.ts"
+import { createOpaqueId } from "../lib/id.ts"
 import { loadSlip, saveSlip } from "../lib/slipStorage.ts"
 import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
 
@@ -35,9 +36,7 @@ export function RegisterPage() {
   const navigate = useNavigate()
   const supabaseState = readSupabaseState(import.meta.env)
   const client = getSupabaseClient()
-  const idempotencyKeyRef = useRef(
-    crypto.randomUUID().replaceAll("-", ""),
-  )
+  const idempotencyKeyRef = useRef(createOpaqueId())
   const existingSlip = loadSlip()
   const [departments, setDepartments] = useState<DepartmentOption[]>([])
   const [displayName, setDisplayName] = useState("")
@@ -285,9 +284,6 @@ export function RegisterPage() {
           <div className="choice-row staff-actions">
             <Link className="button button-secondary" to="/slip">
               {messages.mySlip}
-            </Link>
-            <Link className="button button-secondary" to="/my-turn">
-              {messages.myTurn}
             </Link>
           </div>
         ) : null}

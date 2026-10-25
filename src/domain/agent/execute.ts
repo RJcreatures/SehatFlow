@@ -61,7 +61,7 @@ export type LiveQueueHint = {
 }
 
 const DESTINATION_PATH: Record<OpenDestination, string> = {
-  my_turn: "/my-turn",
+  my_turn: "/slip",
   slip: "/slip",
   find: "/find",
   emergency: "/emergency",

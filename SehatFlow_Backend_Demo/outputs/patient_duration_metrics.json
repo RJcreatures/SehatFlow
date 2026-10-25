@@ -1,0 +1,49 @@
+{
+  "title": "SehatFlow synthetic patient consultation duration demo",
+  "data_origin": "synthetic",
+  "warning": "Synthetic consultation records. Metrics are not evidence of real clinical workflow performance. This model estimates consultation duration only and does not recommend diagnosis or medicine.",
+  "seed": 20261024,
+  "records": 17813,
+  "unique_synthetic_patients": 4200,
+  "departments": [
+    "Cardiology",
+    "Dermatology",
+    "ENT",
+    "General Medicine",
+    "Ophthalmology / Eye Clinic",
+    "Orthopedics",
+    "Pediatrics"
+  ],
+  "date_start": "2024-01-01",
+  "date_end": "2026-10-23",
+  "split_method": "Chronological holdout: earliest 80% of dates for training; latest 20% of dates for evaluation.",
+  "cutoff_date": "2026-02-07",
+  "training_rows": 14240,
+  "test_rows": 3573,
+  "model": "HistGradientBoostingRegressor with one-hot encoded categorical inputs",
+  "features": [
+    "department",
+    "visit_reason_group",
+    "visit_type",
+    "age_years",
+    "symptom_count",
+    "has_previous_visit",
+    "days_since_previous_visit",
+    "previous_visit_duration_minutes"
+  ],
+  "target": "consultation_minutes (simulated doctor consultation duration; not total waiting time)",
+  "model_metrics": {
+    "mae_minutes": 2.26,
+    "rmse_minutes": 2.832,
+    "r2": 0.683
+  },
+  "department_median_baseline_metrics": {
+    "mae_minutes": 3.352,
+    "rmse_minutes": 4.161,
+    "r2": 0.3156
+  },
+  "model_mae_improvement_vs_baseline_percent": 32.6,
+  "model_artifact": "patient_duration_model.joblib",
+  "holdout_predictions_file": "patient_duration_holdout_predictions.csv",
+  "target_generation_method": "Simulated durations use configurable department-level assumptions, visit type, age band, symptom-count effect, broad reason-group offset, previous duration for returning visits, and seeded random noise. This is a teaching/demo mechanism, not a clinically validated duration rule."
+}

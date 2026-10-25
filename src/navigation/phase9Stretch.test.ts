@@ -9,12 +9,15 @@ import { shouldShowGlobalAssistant } from "./globalAssistant.ts"
 const root = join(dirname(fileURLToPath(import.meta.url)), "..")
 
 describe("Phase 9 stretch integration", () => {
-  it("adds an in-app QR scanner on My Turn without weakening lookup", () => {
-    const page = readFileSync(join(root, "pages/MyTurnPage.tsx"), "utf8")
-    expect(page).toContain("QrScanner")
-    expect(page).toContain("runQrLookup")
-    expect(page).toContain("qr_token")
-    expect(page).not.toMatch(/tel:/i)
+  it("puts the in-app QR scanner on staff to identify patients from slips", () => {
+    const staff = readFileSync(join(root, "staff/StaffDashboard.tsx"), "utf8")
+    expect(staff).toContain("QrScanner")
+    expect(staff).toContain("identifyFromQr")
+    expect(staff).toContain("qr_token")
+    expect(staff).not.toMatch(/tel:/i)
+    const slip = readFileSync(join(root, "pages/SlipPage.tsx"), "utf8")
+    expect(slip).toContain("SlipQrCard")
+    expect(slip).not.toContain("QrScanner")
   })
 
   it("keeps emergency independent of scanner, notifications, and sim call", () => {

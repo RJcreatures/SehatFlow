@@ -119,6 +119,7 @@ const templateKeys = [
   "notifyStatusBody",
   "simCallBody",
   "registerUncertain",
+  "staffQrIdentified",
   "confirmCallNextToken",
   "confirmCompleteToken",
   "confirmNoShowToken",

@@ -26,10 +26,10 @@ describe("QR lookup tokens", () => {
     expect(await sha256Hex(token)).toBe(hash)
   })
 
-  it("builds a public my-turn URL with only the opaque token", () => {
+  it("builds a public staff URL with only the opaque token", () => {
     const url = buildQrScanUrl("https://demo.example.com/", "Abcdefghijklmnopqrstuvwxyz012345")
     expect(url).toBe(
-      "https://demo.example.com/my-turn?q=Abcdefghijklmnopqrstuvwxyz012345",
+      "https://demo.example.com/staff?q=Abcdefghijklmnopqrstuvwxyz012345",
     )
     expect(url.includes("access")).toBe(false)
   })
@@ -65,7 +65,7 @@ describe("QR lookup tokens", () => {
       "Abcdefghijklmnopqrstuvwxyz012345",
     )
     expect(url).toBe(
-      "https://sahaayopd.rjcreatures.workers.dev/my-turn?q=Abcdefghijklmnopqrstuvwxyz012345",
+      "https://sahaayopd.rjcreatures.workers.dev/staff?q=Abcdefghijklmnopqrstuvwxyz012345",
     )
   })
 

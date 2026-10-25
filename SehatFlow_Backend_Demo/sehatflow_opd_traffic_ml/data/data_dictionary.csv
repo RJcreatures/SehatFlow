@@ -1,0 +1,21 @@
+column,type,description
+observed_at,ISO-8601 timestamp with +05:30 offset,Simulated hour in Asia/Kolkata
+service_date,YYYY-MM-DD,Local service date for the daily aggregate
+department_code,text,Stable synthetic OPD department code
+department_name,text,Configured sample department label
+arrivals_count,integer,Simulated aggregate arrivals during the hour/day
+completed_count,integer,Simulated visits completed during the hour/day
+queue_start_count,integer,Simulated queue count at the start of the hour; zero when clinic is closed
+queue_end_count,integer,Simulated queue count at the end of the hour; zero when clinic is closed
+avg_service_minutes,numeric,Assumed synthetic service duration per visit; not measured hospital data
+mean_service_minutes,numeric,Daily average of the assumed synthetic service-duration parameter
+doctors_on_duty,integer,Simulated staffing level during the hour
+support_staff_on_duty,integer,Simulated support-staff level during the hour
+doctors_peak,integer,Daily maximum simulated number of doctors on duty
+support_staff_peak,integer,Daily maximum simulated support staff on duty
+clinic_open,boolean,Whether the simulated OPD is scheduled open for the hour
+open_hours,integer,Number of scheduled open hours in the simulated service day
+is_weekend,boolean,Calendar-derived weekend flag for the synthetic schedule
+is_special_schedule_day,boolean,Generated low-hours day; not a claim of a real public holiday
+peak_queue_count,integer,Maximum simulated end-of-hour queue count for the day
+data_origin,text,Always synthetic; included as an explicit disclosure field

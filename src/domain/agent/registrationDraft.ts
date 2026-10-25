@@ -1,4 +1,5 @@
 import { appConfig } from "../../config/hospital.ts"
+import { createOpaqueId } from "../../lib/id.ts"
 import type { RegisterPatientResponse } from "../../lib/supabase/patientApi.ts"
 import type { RegistrationDraft } from "./types.ts"
 
@@ -19,9 +20,7 @@ export function createRegistrationDraft(
     age: partial?.age ?? null,
     gender: partial?.gender ?? null,
     department_code: partial?.department_code ?? null,
-    idempotency_key:
-      partial?.idempotency_key ??
-      crypto.randomUUID().replaceAll("-", ""),
+    idempotency_key: partial?.idempotency_key ?? createOpaqueId(),
   }
 }
 

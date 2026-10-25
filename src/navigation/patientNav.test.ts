@@ -23,9 +23,9 @@ describe("patient bottom navigation", () => {
     ])
   })
 
-  it("opens My Slip when a slip exists and registration when it does not", () => {
+  it("always opens My Slip as the single patient status surface", () => {
     expect(mySlipDestination(true)).toBe("/slip")
-    expect(mySlipDestination(false)).toBe("/register")
+    expect(mySlipDestination(false)).toBe("/slip")
   })
 
   it("hides the bar on staff and board routes", () => {

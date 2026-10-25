@@ -19,11 +19,11 @@ export const patientNavItems = [
 export type PatientNavId = (typeof patientNavItems)[number]["id"] | "mySlip"
 
 /**
- * My Slip opens the saved slip when one exists in this tab.
- * Otherwise send the visitor to registration — never invent token details.
+ * My Slip is the single patient status surface (token, wait, staff QR).
+ * Empty tabs still open /slip so visitors can recover with token + access code.
  */
-export function mySlipDestination(hasSlip: boolean = loadSlip() !== null): "/slip" | "/register" {
-  return hasSlip ? "/slip" : "/register"
+export function mySlipDestination(_hasSlip: boolean = loadSlip() !== null): "/slip" {
+  return "/slip"
 }
 
 export function shouldShowPatientBottomNav(pathname: string): boolean {

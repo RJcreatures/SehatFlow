@@ -55,15 +55,16 @@ export function coerceHttpOrigin(raw: string): string | null {
 }
 
 /**
- * Build the scannable My Turn URL. Only the opaque QR token is included —
- * never the access code or personal data.
+ * Build the scannable staff URL. Only the opaque QR token is included —
+ * never the access code or personal data. Staff scan this to identify
+ * which patient / token a slip belongs to.
  */
 export function buildQrScanUrl(appOrigin: string, qrToken: string): string {
   const origin = coerceHttpOrigin(appOrigin)
   if (!origin) {
     throw new Error(`Invalid public app origin: ${appOrigin}`)
   }
-  const url = new URL("/my-turn", `${origin}/`)
+  const url = new URL("/staff", `${origin}/`)
   url.searchParams.set("q", qrToken)
   return url.toString()
 }

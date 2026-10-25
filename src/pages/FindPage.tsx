@@ -1,651 +1,418 @@
 import { useEffect, useMemo, useState } from "react"
 import { HospitalMap } from "../components/HospitalMap.tsx"
 import { PageHeading } from "../components/PageHeading.tsx"
-import type { DepartmentFact } from "../domain/voice/answers.ts"
 import {
-  departmentDestinationId,
+  landmarkLabel,
+  popularDestinationIds,
+  routableDestinationIds,
+  routableStartIds,
+} from "../domain/navigation/landmarkCatalog.ts"
+import {
   hospitalGraph,
-  startPointOptions,
+  isRoutableNodeId,
 } from "../domain/navigation/hospitalGraph.ts"
 import {
-  matchDepartmentText,
+  matchDestinationText,
   matchLandmarkText,
-  SELECTABLE_START_LANDMARKS,
   type LocationMatchCandidate,
 } from "../domain/navigation/locationMatch.ts"
-import {
-  localizedDepartmentName,
-  localizedRoomFloor,
-} from "../domain/departmentLabels.ts"
 import {
   buildNaturalDirections,
   naturalDurationLabel,
   routePathSignature,
 } from "../domain/navigation/naturalDirections.ts"
 import { findRoute } from "../domain/navigation/pathfind.ts"
-import type { FloorId, RouteMode } from "../domain/navigation/types.ts"
-import type { MessageCatalog } from "../i18n/types.ts"
-import {
-  getSupabaseClient,
-  readSupabaseState,
-} from "../lib/supabase/client.ts"
-import { supabaseErrorMessage } from "../lib/supabase/errors.ts"
+import type { FloorId, RouteResult } from "../domain/navigation/types.ts"
 import { useAssistantContext } from "../preferences/AssistantContext.tsx"
 import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
 
-type DepartmentOption = {
-  code: string
-  name_en: string
-  name_hi: string
-  room_en?: string
-  room_hi?: string
-  floor_en?: string
-  floor_hi?: string
-}
+type ViewMode = "form" | "route"
 
-type WizardStep = "start" | "destination" | "route"
-
-const DEPARTMENT_CODES = [
-  "general_medicine",
-  "pediatrics",
-  "womens_health",
-  "orthopedics",
-  "ent",
-  "ophthalmology",
-  "dermatology",
-] as const
-
-function fallbackDepartments(messages: MessageCatalog): DepartmentOption[] {
-  const labels: Record<(typeof DEPARTMENT_CODES)[number], keyof MessageCatalog> =
-    {
-      general_medicine: "navDeptGeneralMedicine",
-      pediatrics: "navDeptPediatrics",
-      womens_health: "navDeptWomensHealth",
-      orthopedics: "navDeptOrthopedics",
-      ent: "navDeptEnt",
-      ophthalmology: "navDeptOphthalmology",
-      dermatology: "navDeptDermatology",
-    }
-  return DEPARTMENT_CODES.filter((code) => departmentDestinationId(code)).map(
-    (code) => {
-      const label = String(messages[labels[code]])
-      return { code, name_en: label, name_hi: label }
-    },
+function notableWaypoints(result: RouteResult): string[] {
+  if (result.status !== "ok") {
+    return []
+  }
+  const notable = new Set(
+    result.path.filter((id) => {
+      const node = hospitalGraph.nodes[id]
+      if (!node) {
+        return false
+      }
+      if (node.departmentCode) {
+        return true
+      }
+      return !id.startsWith("corridor")
+    }),
   )
+  const ordered: string[] = []
+  for (const id of result.path) {
+    if (notable.has(id) && !ordered.includes(id)) {
+      ordered.push(id)
+    }
+  }
+  return ordered
 }
 
 export function FindPage() {
   const messages = useMessages()
   const { preferences } = usePreferences()
-  const {
-    setRouteContext,
-    setDepartments: setAssistantDepartments,
-    setTokenContext,
-  } = useAssistantContext()
-  const supabaseState = readSupabaseState(import.meta.env)
-  const client = getSupabaseClient()
+  const { setRouteContext } = useAssistantContext()
 
-  const [departments, setDepartments] = useState<DepartmentOption[]>(() =>
-    fallbackDepartments(messages),
+  const startOptions = useMemo(() => routableStartIds(), [])
+  const destinationOptions = useMemo(() => routableDestinationIds(), [])
+  const popularIds = useMemo(() => popularDestinationIds(), [])
+
+  const [view, setView] = useState<ViewMode>("form")
+  const [fromId, setFromId] = useState("")
+  const [toId, setToId] = useState("")
+  const [fromQuery, setFromQuery] = useState("")
+  const [toQuery, setToQuery] = useState("")
+  const [fromSuggestions, setFromSuggestions] = useState<LocationMatchCandidate[]>(
+    [],
   )
-  const [loadingDepartments, setLoadingDepartments] = useState(
-    supabaseState.status === "ready",
-  )
-  const [loadError, setLoadError] = useState<string | null>(null)
-
-  const [step, setStep] = useState<WizardStep>("start")
-  const [startId, setStartId] = useState<string>("")
-  const [startText, setStartText] = useState("")
-  const [startSuggestions, setStartSuggestions] = useState<
-    LocationMatchCandidate[]
-  >([])
-  const [startError, setStartError] = useState<string | null>(null)
-  const [geoNote, setGeoNote] = useState<string | null>(null)
-
-  const [destinationCode, setDestinationCode] = useState("")
-  const [destinationText, setDestinationText] = useState("")
-  const [destinationSuggestions, setDestinationSuggestions] = useState<
-    LocationMatchCandidate[]
-  >([])
-  const [destinationError, setDestinationError] = useState<string | null>(null)
-
-  const [mode, setMode] = useState<RouteMode>("assisted")
+  const [toSuggestions, setToSuggestions] = useState<LocationMatchCandidate[]>([])
+  const [fromError, setFromError] = useState<string | null>(null)
+  const [toError, setToError] = useState<string | null>(null)
   const [floorView, setFloorView] = useState<FloorId | "all">("all")
+  const [activeStep, setActiveStep] = useState(0)
 
-  useEffect(() => {
-    if (supabaseState.status !== "ready" || !client) {
-      return
-    }
-    const supabase = client
-    let cancelled = false
-    void (async () => {
-      const { data, error } = await supabase
-        .from("departments")
-        .select("code, name_en, name_hi, room_en, room_hi, floor_en, floor_hi")
-        .eq("active", true)
-        .order("display_order")
-      if (cancelled) {
-        return
-      }
-      if (error) {
-        setLoadError(supabaseErrorMessage(error, messages.registerLoadError))
-        setLoadingDepartments(false)
-        return
-      }
-      const rows = (data ?? []) as DepartmentOption[]
-      if (rows.length > 0) {
-        setDepartments(rows)
-      }
-      setLoadingDepartments(false)
-    })()
-    return () => {
-      cancelled = true
-    }
-  }, [client, messages.registerLoadError, supabaseState.status])
+  const canShowRoute =
+    Boolean(fromId) &&
+    Boolean(toId) &&
+    isRoutableNodeId(fromId) &&
+    isRoutableNodeId(toId)
 
-  const destinationNodeId = useMemo(() => {
-    if (!destinationCode) {
+  const route: RouteResult | null = useMemo(() => {
+    if (view !== "route" || !canShowRoute) {
       return null
     }
-    return departmentDestinationId(destinationCode)
-  }, [destinationCode])
-
-  const route = useMemo(() => {
-    if (step !== "route" || !startId || !destinationCode) {
-      return null
-    }
-    if (!destinationNodeId) {
-      return {
-        status: "no_route" as const,
-        mode,
-        reason: "unknown_node" as const,
-        fromId: startId,
-        toId: destinationCode,
-      }
-    }
-    return findRoute(hospitalGraph, startId, destinationNodeId, mode)
-  }, [destinationCode, destinationNodeId, mode, startId, step])
+    return findRoute(hospitalGraph, fromId, toId, "assisted")
+  }, [view, canShowRoute, fromId, toId])
 
   const directions = useMemo(() => {
     if (!route) {
       return []
     }
     return buildNaturalDirections(messages, hospitalGraph, route)
-  }, [messages, route])
+  }, [route, messages])
 
-  const departmentFacts = useMemo((): DepartmentFact[] => {
-    return departments.map((department) => {
-      const nodeId = departmentDestinationId(department.code)
-      const node = nodeId ? hospitalGraph.nodes[nodeId] : null
-      const name = localizedDepartmentName(
-        messages,
-        preferences.language,
-        department,
-      )
-      const places = localizedRoomFloor(
-        preferences.language,
-        department,
-        messages.notAvailable,
-      )
-      return {
-        code: department.code,
-        name,
-        room: places.room,
-        floor:
-          places.floor !== messages.notAvailable
-            ? places.floor
-            : node?.floor === 1
-              ? messages.findFloorFirst
-              : messages.findFloorGround,
-      }
-    })
-  }, [departments, messages, preferences.language])
-
-  useEffect(() => {
-    setTokenContext(null)
-    setAssistantDepartments(departmentFacts)
-    setRouteContext({
-      routeMode: mode,
-      startId: startId || "entrance",
-    })
-    return () => {
-      setRouteContext(null)
-    }
-  }, [
-    departmentFacts,
-    mode,
-    startId,
-    setAssistantDepartments,
-    setRouteContext,
-    setTokenContext,
-  ])
-
+  const waypoints = useMemo(() => (route ? notableWaypoints(route) : []), [route])
   const pathSignature = route ? routePathSignature(route) : ""
 
+  useEffect(() => {
+    setRouteContext({
+      routeMode: "assisted",
+      startId: fromId || "entrance",
+    })
+  }, [fromId, setRouteContext])
+
+  useEffect(() => {
+    setActiveStep(0)
+    if (route?.status === "ok") {
+      const floors = new Set(
+        route.path.map((id) => hospitalGraph.nodes[id]?.floor).filter(
+          (floor): floor is FloorId => floor === 0 || floor === 1,
+        ),
+      )
+      setFloorView(floors.size === 1 ? [...floors][0]! : "all")
+    }
+  }, [route])
+
   function labelFor(nodeId: string): string {
-    const node = hospitalGraph.nodes[nodeId]
-    if (!node) {
-      return nodeId
-    }
-    const key = node.labelKey as keyof MessageCatalog
-    const value = messages[key]
-    return typeof value === "string" ? value : nodeId
+    return landmarkLabel(messages, nodeId)
   }
 
-  function departmentLabel(code: string): string {
-    const row = departments.find((item) => item.code === code)
-    if (!row) {
-      return localizedDepartmentName(messages, preferences.language, {
-        code,
-      })
+  function applyFromMatch(text: string) {
+    const result = matchLandmarkText(text, startOptions)
+    if (result.status === "exact") {
+      setFromId(result.candidate.id)
+      setFromQuery(labelFor(result.candidate.id))
+      setFromSuggestions([])
+      setFromError(null)
+      return
     }
-    return localizedDepartmentName(messages, preferences.language, row)
+    if (result.status === "suggestions") {
+      setFromSuggestions(result.candidates)
+      setFromError(messages.findStartConfirmNeeded)
+      return
+    }
+    setFromSuggestions([])
+    setFromError(messages.findStartUnrecognized)
   }
 
-  function interpretStart() {
-    setStartError(null)
-    setStartSuggestions([])
-    const match = matchLandmarkText(startText, SELECTABLE_START_LANDMARKS)
-    if (match.status === "exact") {
-      setStartId(match.candidate.code)
-      setStartSuggestions([])
+  function applyToMatch(text: string) {
+    const result = matchDestinationText(text, destinationOptions)
+    if (result.status === "exact") {
+      setToId(result.candidate.id)
+      setToQuery(labelFor(result.candidate.id))
+      setToSuggestions([])
+      setToError(null)
       return
     }
-    if (match.status === "suggestions") {
-      setStartSuggestions(match.candidates)
-      setStartError(messages.findStartConfirmNeeded)
+    if (result.status === "suggestions") {
+      setToSuggestions(result.candidates)
+      setToError(messages.findDestinationConfirmNeeded)
       return
     }
-    setStartError(messages.findStartUnrecognized)
+    setToSuggestions([])
+    setToError(messages.findDestinationUnrecognized)
   }
 
-  function interpretDestination() {
-    setDestinationError(null)
-    setDestinationSuggestions([])
-    const codes = departments.map((item) => item.code)
-    const match = matchDepartmentText(destinationText, codes)
-    if (match.status === "exact") {
-      setDestinationCode(match.candidate.code)
-      setDestinationSuggestions([])
+  function showRoute() {
+    if (!fromId) {
+      setFromError(messages.findStartRequired)
       return
     }
-    if (match.status === "suggestions") {
-      setDestinationSuggestions(match.candidates)
-      setDestinationError(messages.findDestinationConfirmNeeded)
+    if (!toId) {
+      setToError(messages.findDestinationRequired)
       return
     }
-    setDestinationError(messages.findDestinationUnrecognized)
+    setView("route")
   }
 
-  function continueFromStart() {
-    if (!startId || !hospitalGraph.nodes[startId]) {
-      setStartError(messages.findStartRequired)
-      return
-    }
-    setStartError(null)
-    setStep("destination")
-  }
-
-  function continueFromDestination() {
-    if (!destinationCode || !departmentDestinationId(destinationCode)) {
-      setDestinationError(messages.findDestinationRequired)
-      return
-    }
-    setDestinationError(null)
-    setStep("route")
-    const destNode = departmentDestinationId(destinationCode)
-    const destFloor = destNode ? hospitalGraph.nodes[destNode]?.floor : undefined
-    const startFloor = hospitalGraph.nodes[startId]?.floor
-    if (startFloor !== undefined && destFloor !== undefined && startFloor !== destFloor) {
-      setFloorView("all")
-    } else if (startFloor !== undefined) {
-      setFloorView(startFloor)
-    }
-  }
-
-  function requestGeoHint() {
-    setGeoNote(null)
-    if (!navigator.geolocation) {
-      setGeoNote(messages.findGeoUnavailable)
-      return
-    }
-    navigator.geolocation.getCurrentPosition(
-      () => {
-        // GPS cannot resolve indoor landmarks; only suggest confirming Entrance.
-        setGeoNote(messages.findGeoApproximate)
-        setStartSuggestions([
-          {
-            id: "entrance",
-            kind: "landmark",
-            code: "entrance",
-            score: 40,
-            aliasesHit: ["geolocation"],
-          },
-        ])
-      },
-      () => setGeoNote(messages.findGeoDenied),
-      { enableHighAccuracy: false, timeout: 8000, maximumAge: 60_000 },
-    )
-  }
-
-  const starts = startPointOptions()
+  const currentLine = directions[activeStep] ?? directions[0] ?? ""
 
   return (
     <>
-      <PageHeading title={messages.findTitle}>
-        <p>{messages.findBody}</p>
-      </PageHeading>
+      <PageHeading title={messages.findTitle} />
 
-      {step === "start" ? (
-        <section className="panel" aria-labelledby="find-start-heading">
-          <h2 id="find-start-heading">{messages.findStartQuestion}</h2>
-          <p>{messages.findStartHint}</p>
+      {view === "form" ? (
+        <section className="panel find-form" aria-labelledby="find-form-heading">
+          <h2 id="find-form-heading" className="visually-hidden">
+            {messages.findWhereGoing}
+          </h2>
 
-          <fieldset className="settings-group">
-            <legend>{messages.findStartPickLandmark}</legend>
-            <div className="choice-row find-landmark-row">
-              {starts.map((id) => (
+          <div className="find-field">
+            <label className="field-label" htmlFor="find-from">
+              {messages.findFromLabel}
+            </label>
+            <input
+              id="find-from"
+              className="text-input find-input"
+              value={fromQuery}
+              placeholder={messages.findStartPlaceholder}
+              autoComplete="off"
+              onChange={(event) => {
+                setFromQuery(event.target.value)
+                setFromId("")
+                setFromError(null)
+              }}
+              onBlur={() => {
+                if (fromQuery.trim() && !fromId) {
+                  applyFromMatch(fromQuery)
+                }
+              }}
+            />
+            <div className="choice-row find-chip-row" role="list">
+              {startOptions.slice(0, 6).map((id) => (
                 <button
                   key={id}
                   type="button"
-                  className={startId === id ? "choice is-selected" : "choice"}
+                  className={fromId === id ? "choice is-selected" : "choice"}
                   onClick={() => {
-                    setStartId(id)
-                    setStartError(null)
-                    setStartSuggestions([])
+                    setFromId(id)
+                    setFromQuery(labelFor(id))
+                    setFromSuggestions([])
+                    setFromError(null)
                   }}
                 >
                   {labelFor(id)}
                 </button>
               ))}
             </div>
-          </fieldset>
-
-          <label className="field">
-            <span>{messages.findStartDescribe}</span>
-            <input
-              value={startText}
-              onChange={(event) => setStartText(event.target.value)}
-              placeholder={messages.findStartPlaceholder}
-            />
-          </label>
-          <div className="choice-row">
-            <button
-              type="button"
-              className="button button-secondary"
-              onClick={interpretStart}
-            >
-              {messages.findSuggestMatches}
-            </button>
-            <button
-              type="button"
-              className="button button-secondary"
-              onClick={requestGeoHint}
-            >
-              {messages.findGeoOptional}
-            </button>
+            {fromSuggestions.length > 0 ? (
+              <div className="choice-row" role="list">
+                {fromSuggestions.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="choice"
+                    onClick={() => {
+                      setFromId(item.id)
+                      setFromQuery(labelFor(item.id))
+                      setFromSuggestions([])
+                      setFromError(null)
+                    }}
+                  >
+                    {labelFor(item.id)}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            {fromError ? (
+              <p className="form-error" role="alert">
+                {fromError}
+              </p>
+            ) : null}
           </div>
-          {geoNote ? <p>{geoNote}</p> : null}
-          {startSuggestions.length > 0 ? (
-            <div className="stack-gap" role="list">
-              <p className="emphasis">{messages.findSuggestedStarts}</p>
-              {startSuggestions.map((item) => (
-                <button
-                  key={item.code}
-                  type="button"
-                  className="button button-secondary"
-                  onClick={() => {
-                    setStartId(item.code)
-                    setStartSuggestions([])
-                    setStartError(null)
-                  }}
-                >
-                  {labelFor(item.code)}
-                </button>
-              ))}
-            </div>
-          ) : null}
-          {startId ? (
-            <p className="emphasis">
-              {messages.findStartConfirmed}: {labelFor(startId)}
-            </p>
-          ) : null}
-          {startError ? (
-            <p className="form-error" role="alert">
-              {startError}
-            </p>
-          ) : null}
-          <button type="button" className="button" onClick={continueFromStart}>
-            {messages.findContinue}
-          </button>
-        </section>
-      ) : null}
 
-      {step === "destination" ? (
-        <section className="panel" aria-labelledby="find-dest-heading">
-          <h2 id="find-dest-heading">{messages.findDestinationQuestion}</h2>
-          <p>{messages.findDestinationHint}</p>
-          <p>
-            {messages.findStartConfirmed}: {labelFor(startId)}
-          </p>
-          <button
-            type="button"
-            className="button button-secondary"
-            onClick={() => setStep("start")}
-          >
-            {messages.findChangeStart}
-          </button>
-
-          <label className="field">
-            <span>{messages.findDestinationLabel}</span>
-            <select
-              value={destinationCode}
-              onChange={(event) => {
-                setDestinationCode(event.target.value)
-                setDestinationError(null)
-                setDestinationSuggestions([])
-              }}
-              disabled={loadingDepartments || departments.length === 0}
-            >
-              <option value="">{messages.findDestinationChoose}</option>
-              {departments.map((department) => (
-                <option key={department.code} value={department.code}>
-                  {localizedDepartmentName(
-                    messages,
-                    preferences.language,
-                    department,
-                  )}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="field">
-            <span>{messages.findDestinationDescribe}</span>
+          <div className="find-field">
+            <label className="field-label" htmlFor="find-to">
+              {messages.findToLabel}
+            </label>
             <input
-              value={destinationText}
-              onChange={(event) => setDestinationText(event.target.value)}
+              id="find-to"
+              className="text-input find-input"
+              value={toQuery}
               placeholder={messages.findDestinationPlaceholder}
+              autoComplete="off"
+              onChange={(event) => {
+                setToQuery(event.target.value)
+                setToId("")
+                setToError(null)
+              }}
+              onBlur={() => {
+                if (toQuery.trim() && !toId) {
+                  applyToMatch(toQuery)
+                }
+              }}
             />
-          </label>
-          <button
-            type="button"
-            className="button button-secondary"
-            onClick={interpretDestination}
-          >
-            {messages.findSuggestMatches}
-          </button>
-          {destinationSuggestions.length > 0 ? (
-            <div className="stack-gap" role="list">
-              <p className="emphasis">{messages.findSuggestedDestinations}</p>
-              {destinationSuggestions.map((item) => (
+            <div className="choice-row find-chip-row" role="list">
+              {popularIds.map((id) => (
                 <button
-                  key={item.code}
+                  key={id}
                   type="button"
-                  className="button button-secondary"
+                  className={toId === id ? "choice is-selected" : "choice"}
                   onClick={() => {
-                    setDestinationCode(item.code)
-                    setDestinationSuggestions([])
-                    setDestinationError(null)
+                    setToId(id)
+                    setToQuery(labelFor(id))
+                    setToSuggestions([])
+                    setToError(null)
                   }}
                 >
-                  {departmentLabel(item.code)}
+                  {labelFor(id)}
                 </button>
               ))}
             </div>
-          ) : null}
-          {destinationCode ? (
-            <p className="emphasis">
-              {messages.findDestinationConfirmed}:{" "}
-              {departmentLabel(destinationCode)}
-            </p>
-          ) : null}
-          {destinationError ? (
-            <p className="form-error" role="alert">
-              {destinationError}
-            </p>
-          ) : null}
-          {loadError ? <p className="form-error">{loadError}</p> : null}
-
-          <fieldset className="settings-group find-mode">
-            <legend>{messages.findAssistedLabel}</legend>
-            <label className="radio-row">
-              <input
-                type="radio"
-                name="nav-mode"
-                checked={mode === "assisted"}
-                onChange={() => setMode("assisted")}
-              />
-              <span>
-                <span className="button-label">{messages.findAssistedLabel}</span>
-                <span className="button-hint">{messages.findAssistedHint}</span>
-              </span>
-            </label>
-            <label className="radio-row">
-              <input
-                type="radio"
-                name="nav-mode"
-                checked={mode === "standard"}
-                onChange={() => setMode("standard")}
-              />
-              <span>{messages.findStandardLabel}</span>
-            </label>
-          </fieldset>
+            {toSuggestions.length > 0 ? (
+              <div className="choice-row" role="list">
+                {toSuggestions.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className="choice"
+                    onClick={() => {
+                      setToId(item.id)
+                      setToQuery(labelFor(item.id))
+                      setToSuggestions([])
+                      setToError(null)
+                    }}
+                  >
+                    {labelFor(item.id)}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            {toError ? (
+              <p className="form-error" role="alert">
+                {toError}
+              </p>
+            ) : null}
+          </div>
 
           <button
             type="button"
-            className="button"
-            onClick={continueFromDestination}
+            className="button find-show-route"
+            disabled={!canShowRoute}
+            onClick={showRoute}
           >
             {messages.findShowRoute}
           </button>
         </section>
       ) : null}
 
-      {step === "route" ? (
-        <>
-          <section className="panel" aria-labelledby="find-route-summary">
-            <h2 id="find-route-summary">{messages.findRouteTitle}</h2>
-            <p className="privacy-note">{messages.findMapDemoNote}</p>
-            <p>
-              {messages.findStartConfirmed}: {labelFor(startId)}
-            </p>
-            <p>
-              {messages.findDestinationConfirmed}:{" "}
-              {departmentLabel(destinationCode)}
-            </p>
-            <p>
-              {mode === "assisted"
-                ? messages.findAssistedLabel
-                : messages.findStandardLabel}
-            </p>
-            <div className="choice-row">
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={() => setStep("start")}
-              >
-                {messages.findChangeStart}
-              </button>
-              <button
-                type="button"
-                className="button button-secondary"
-                onClick={() => setStep("destination")}
-              >
-                {messages.findChangeDestination}
-              </button>
-            </div>
-          </section>
+      {view === "route" && route ? (
+        <section className="find-route-view" aria-live="polite">
+          <div className="panel">
+            <h2 className="find-destination-title">{labelFor(toId)}</h2>
+            <p className="status-line">{labelFor(fromId)}</p>
+            <button type="button" className="choice" onClick={() => setView("form")}>
+              {messages.findChangeRoute}
+            </button>
+          </div>
 
-          <section className="panel" aria-labelledby="find-map-heading">
-            <h2 id="find-map-heading">{messages.findMapTitle}</h2>
-            <div className="hospital-map-frame">
+          {route.status === "ok" ? (
+            <>
               <HospitalMap
                 graph={hospitalGraph}
                 route={route}
                 messages={messages}
                 labelFor={labelFor}
-                startId={startId}
-                destinationId={destinationNodeId}
+                startId={fromId}
+                destinationId={toId}
                 floorView={floorView}
                 onFloorViewChange={setFloorView}
+                stepNodeIds={waypoints}
+                activeStepIndex={Math.min(activeStep, Math.max(0, waypoints.length - 1))}
+                mapRotationDegrees={0}
+                showNorth
               />
-            </div>
-            <p className="hospital-map-legend">
-              E {messages.navEntrance} · R {messages.navReception} · H{" "}
-              {messages.navHelpDesk} · W {messages.navWaterStation} · L{" "}
-              {messages.navLift} · A {messages.navRamp} · S {messages.navStairs}
-            </p>
-            <p className="visually-hidden">
-              {messages.findPathSignature}: {pathSignature}
-            </p>
-          </section>
+              <p className="emphasis">
+                {naturalDurationLabel(messages, route.totalSeconds)}
+              </p>
+              <p className="visually-hidden">
+                {messages.findPathSignature}: {pathSignature}
+              </p>
 
-          <section
-            className="panel"
-            aria-labelledby="find-route-heading"
-            aria-live="polite"
-          >
-            <h2 id="find-route-heading">{messages.findDirectionsHeading}</h2>
-            {!route ? (
-              <p>{messages.findUnknownDestination}</p>
-            ) : route.status === "same_place" ? (
-              <p className="emphasis">{messages.findSamePlace}</p>
-            ) : route.status === "no_route" ? (
-              <>
-                <p className="form-error">
-                  {route.reason === "no_step_free"
-                    ? messages.findNoStepFree
-                    : destinationNodeId
-                      ? messages.findNoRoute
-                      : messages.findUnknownDestination}
+              <section className="panel find-now-panel" aria-labelledby="find-now">
+                <h2 id="find-now">{messages.findCurrentInstruction}</h2>
+                <p className="find-now-text">
+                  <span aria-hidden="true">→ </span>
+                  {currentLine}
                 </p>
-                <p className="emphasis">{messages.findGoHelpDesk}</p>
-                {route.reason === "no_step_free" && mode === "assisted" ? (
+                <p className="status-line">
+                  {messages.findStepOf
+                    .replace("{current}", String(activeStep + 1))
+                    .replace("{total}", String(Math.max(1, directions.length)))}
+                </p>
+                <div className="choice-row">
                   <button
                     type="button"
-                    className="button"
-                    onClick={() => setMode("standard")}
+                    className="choice"
+                    disabled={activeStep <= 0}
+                    onClick={() => setActiveStep((value) => Math.max(0, value - 1))}
                   >
-                    {messages.findTryStandardRoute}
+                    ←
                   </button>
-                ) : null}
-              </>
-            ) : (
-              <>
-                <p className="emphasis">
-                  {naturalDurationLabel(messages, route.totalSeconds)}
-                </p>
-                <ol className="find-directions">
-                  {directions.map((text, index) => (
-                    <li key={`${pathSignature}-${index}`}>{text}</li>
-                  ))}
-                </ol>
-              </>
-            )}
-          </section>
-        </>
+                  <button
+                    type="button"
+                    className="choice"
+                    disabled={activeStep >= directions.length - 1}
+                    onClick={() =>
+                      setActiveStep((value) =>
+                        Math.min(directions.length - 1, value + 1),
+                      )
+                    }
+                  >
+                    →
+                  </button>
+                </div>
+              </section>
+            </>
+          ) : route.status === "same_place" ? (
+            <p className="emphasis panel">{messages.findSamePlace}</p>
+          ) : (
+            <div className="panel">
+              <p className="form-error" role="alert">
+                {route.reason === "no_step_free"
+                  ? messages.findNoStepFree
+                  : messages.findNoRoute}
+              </p>
+              <p className="emphasis">{messages.findGoHelpDesk}</p>
+              <button
+                type="button"
+                className="button button-secondary"
+                onClick={() => setView("form")}
+              >
+                {messages.findChangeRoute}
+              </button>
+            </div>
+          )}
+        </section>
       ) : null}
+      <span lang={preferences.language} className="visually-hidden">
+        {preferences.language}
+      </span>
     </>
   )
 }

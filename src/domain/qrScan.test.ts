@@ -7,14 +7,17 @@ import {
 } from "./qrScan.ts"
 
 describe("QR scan payload parsing", () => {
-  it("accepts bare opaque tokens and My Turn URLs", () => {
+  it("accepts bare opaque tokens and staff or legacy My Turn URLs", () => {
     const token = generateQrLookupToken()
     expect(extractQrTokenFromScanText(token)).toBe(token)
+    expect(
+      extractQrTokenFromScanText(`https://demo.example/staff?q=${token}`),
+    ).toBe(token)
     expect(
       extractQrTokenFromScanText(`https://demo.example/my-turn?q=${token}`),
     ).toBe(token)
     expect(
-      extractQrTokenFromScanText(`https://demo.example/my-turn?q=${token}&x=1`),
+      extractQrTokenFromScanText(`https://demo.example/staff?q=${token}&x=1`),
     ).toBe(token)
   })
 

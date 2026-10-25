@@ -1,0 +1,8 @@
+department_code,department_name,hourly_rows,total_arrivals,avg_arrivals_per_hour,peak_hourly_arrivals,total_completed,max_queue_sample,open_hour_rows
+CARDIO,Cardiology,24648,29381,1.192,30,27468,44,7225
+DERM,Dermatology,24648,24863,1.009,22,24630,21,7225
+ENT,ENT,24648,26758,1.086,25,26450,15,7225
+GENMED,General Medicine,24648,118850,4.822,77,117712,67,7225
+OPHTH,Ophthalmology / Eye Clinic,24648,39680,1.610,32,39584,16,7225
+ORTHO,Orthopedics,24648,47149,1.913,42,46526,36,7225
+PEDS,Pediatrics,24648,54679,2.218,46,54215,41,7225

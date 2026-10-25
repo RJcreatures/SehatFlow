@@ -1,0 +1,4 @@
+model,evaluation,test_rows,mae,rmse,wape_percent,r2
+hist_gradient_boosting,rolling_one_hour_ahead,15127,0.8818,2.3581,47.48,0.7175
+ridge_regression,rolling_one_hour_ahead,15127,1.1515,2.6771,62.002,0.6359
+seasonal_naive_168h,rolling_one_hour_ahead,15127,1.2554,3.3685,67.597,0.4236

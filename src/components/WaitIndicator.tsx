@@ -228,7 +228,7 @@ export function WaitIndicator() {
             <span className="wait-indicator-kicker">{messages.tokenLabel}</span>
             <span className="wait-indicator-code">{model.tokenCode}</span>
           </p>
-          <Link className="wait-indicator-link" to="/my-turn">
+          <Link className="wait-indicator-link" to="/slip">
             {messages.waitOpenStatus}
           </Link>
         </div>

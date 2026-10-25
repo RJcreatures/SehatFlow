@@ -20,6 +20,7 @@ import {
   type VoiceIntent,
 } from "../domain/voice/intents.ts"
 import type { UiLanguage } from "../i18n/index.ts"
+import { createOpaqueId } from "../lib/id.ts"
 import {
   getSupabaseClient,
   readSupabaseState,
@@ -101,12 +102,12 @@ export function AssistantChat({
     setThread((prev) => [
       ...prev,
       {
-        id: crypto.randomUUID(),
+        id: createOpaqueId(),
         role: "user",
         text: input.user,
       },
       {
-        id: crypto.randomUUID(),
+        id: createOpaqueId(),
         role: "assistant",
         text: input.assistant,
         openEmergency: input.openEmergency,
@@ -281,7 +282,7 @@ export function AssistantChat({
               {latest.needsMyTurn ? (
                 <Link
                   className="button button-secondary"
-                  to="/my-turn"
+                  to="/slip"
                   onClick={onClose}
                 >
                   {messages.voiceOpenMyTurn}

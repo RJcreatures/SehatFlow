@@ -8,7 +8,7 @@ import { shouldShowGlobalAssistant } from "./globalAssistant.ts"
 const root = join(dirname(fileURLToPath(import.meta.url)), "..")
 
 describe("Ask AI navigation", () => {
-  it("keeps My Turn route while bottom nav uses Ask AI", () => {
+  it("keeps a legacy My Turn redirect while bottom nav uses Ask AI", () => {
     const app = readFileSync(join(root, "App.tsx"), "utf8")
     expect(app).toContain('path="/my-turn"')
     expect(app).toContain('path="/ask"')

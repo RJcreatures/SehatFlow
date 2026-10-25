@@ -2,8 +2,8 @@ import { isQrLookupToken } from "./qrLookup.ts"
 
 /**
  * Extract a SehatFlow opaque QR lookup token from scanner payload text.
- * Accepts the full My Turn URL (`…/my-turn?q=…`) or a bare opaque token.
- * Never logs the raw token.
+ * Accepts staff slip URLs (`…/staff?q=…`), legacy My Turn URLs (`…/my-turn?q=…`),
+ * or a bare opaque token. Never logs the raw token.
  */
 export function extractQrTokenFromScanText(raw: string): string | null {
   const text = raw.trim()

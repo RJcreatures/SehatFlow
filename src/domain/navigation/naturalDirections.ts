@@ -59,11 +59,24 @@ function isNotableLandmark(nodeId: string, graph: HospitalGraph): boolean {
   if (node.departmentCode) {
     return true
   }
+  // Prefer catalogue destinations; keep floor connectors notable for instructions.
   return [
     "entrance",
+    "opd_entrance",
+    "security_desk",
+    "exit",
+    "registration",
+    "opd_reception",
     "reception",
     "help_desk",
+    "waiting_area",
     "water_station",
+    "washroom_g",
+    "pharmacy",
+    "billing",
+    "laboratory",
+    "radiology",
+    "blood_collection",
     "lift_g",
     "lift_1",
     "ramp_g",

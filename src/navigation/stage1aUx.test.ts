@@ -10,7 +10,7 @@ import { onboardingVisitPath } from "./onboarding.ts"
 const root = join(dirname(fileURLToPath(import.meta.url)), "..")
 
 describe("Stage 1A UX cleanup", () => {
-  it("makes Register the primary home action and keeps Emergency + Ask + My Turn", () => {
+  it("makes Register the primary home action and keeps Emergency + Ask + My Slip", () => {
     const home = readFileSync(join(root, "pages/HomePage.tsx"), "utf8")
     const registerIdx = home.indexOf('to="/register"')
     const askIdx = home.indexOf('to="/ask"')
@@ -18,8 +18,8 @@ describe("Stage 1A UX cleanup", () => {
     expect(registerIdx).toBeGreaterThan(-1)
     expect(askIdx).toBeGreaterThan(registerIdx)
     expect(emergencyIdx).toBeGreaterThan(-1)
-    expect(home).toContain('"/my-turn"')
     expect(home).toContain('"/slip"')
+    expect(home).not.toContain('"/my-turn"')
     expect(home).toMatch(/className="button"\s+to="\/register"/)
     expect(home).not.toContain("privacyShort")
   })
@@ -39,9 +39,9 @@ describe("Stage 1A UX cleanup", () => {
     expect(localizeQueueStatus("called", en)).toBe(en.statusCalled)
     expect(localizeQueueStatus("completed", en)).toBe(en.statusCompleted)
     expect(localizeQueueStatus("no_show", en)).toBe(en.statusNoShow)
-    const myTurn = readFileSync(join(root, "pages/MyTurnPage.tsx"), "utf8")
-    expect(myTurn).toContain("localizeQueueStatus")
-    expect(myTurn).not.toContain("queueStatusOnly")
+    const slip = readFileSync(join(root, "pages/SlipPage.tsx"), "utf8")
+    expect(slip).toContain("localizeQueueStatus")
+    expect(slip).not.toContain("queueStatusOnly")
     const staff = readFileSync(join(root, "staff/StaffDashboard.tsx"), "utf8")
     expect(staff).toContain("localizeQueueStatus")
     expect(en.voiceAnswerTokenDone).toContain("completed")

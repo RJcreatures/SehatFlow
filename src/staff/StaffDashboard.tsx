@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useLocation, useNavigate } from "react-router"
+import { QrScanner } from "../components/QrScanner.tsx"
 import {
   breakRemainingMinutes,
   simulatedNow,
@@ -12,6 +14,7 @@ import {
 } from "../domain/queue.ts"
 import { localizeQueueStatus } from "../domain/agent/spoken.ts"
 import { localizedDepartmentName } from "../domain/departmentLabels.ts"
+import { captureQrTokenFromSearch } from "../domain/qrLookup.ts"
 import { staffCan } from "../domain/roles.ts"
 import { supabaseErrorMessage } from "../lib/supabase/errors.ts"
 import type {
@@ -19,6 +22,7 @@ import type {
   QueueStatus,
   StaffRole,
 } from "../lib/supabase/database.types.ts"
+import { getMyTurn } from "../lib/supabase/patientApi.ts"
 import {
   acknowledgeUrgent,
   callNext,
@@ -95,6 +99,9 @@ export function StaffDashboard() {
   const { preferences } = usePreferences()
   const { client, profile } = useStaffAuth()
   const role = profile!.role
+  const location = useLocation()
+  const navigate = useNavigate()
+  const qrHandled = useRef(false)
   const [departments, setDepartments] = useState<Department[]>([])
   const [selectedId, setSelectedId] = useState<string>("")
   const [entries, setEntries] = useState<QueueEntry[]>([])
@@ -108,12 +115,46 @@ export function StaffDashboard() {
   const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [reassignTarget, setReassignTarget] = useState<string>("")
-  const [delayMinutes, setDelayMinutes] = useState("10")
-  const [breakMinutes, setBreakMinutes] = useState("15")
+  const [delayMinutes, setDelayMinutes] = useState(10)
+  const [breakMinutes, setBreakMinutes] = useState(15)
   const [stale, setStale] = useState(false)
   const [wallNow, setWallNow] = useState(() => new Date())
+  const [scannerOpen, setScannerOpen] = useState(false)
+  const [highlightedToken, setHighlightedToken] = useState<string | null>(null)
 
   const selected = departments.find((department) => department.id === selectedId)
+
+  const identifyFromQr = useCallback(
+    async (qrToken: string, deptList: Department[]) => {
+      if (!client) {
+        return
+      }
+      setError(null)
+      const { data, error: lookupError } = await getMyTurn(client, {
+        qr_token: qrToken,
+      })
+      if (
+        lookupError ||
+        !data ||
+        (typeof data === "object" && data !== null && "error" in data)
+      ) {
+        setError(messages.staffQrInvalid)
+        setHighlightedToken(null)
+        return
+      }
+      const match = deptList.find(
+        (department) => department.code === data.department_code,
+      )
+      if (match) {
+        setSelectedId(match.id)
+      }
+      setHighlightedToken(data.token_code)
+      setMessage(
+        messages.staffQrIdentified.replace("{token}", data.token_code),
+      )
+    },
+    [client, messages.staffQrIdentified, messages.staffQrInvalid],
+  )
 
   const refresh = useCallback(async () => {
     if (!client) {
@@ -218,6 +259,34 @@ export function StaffDashboard() {
       cancelled = true
     }
   }, [messages.staffLoadError, refresh])
+
+  useEffect(() => {
+    if (qrHandled.current || loading || departments.length === 0) {
+      return
+    }
+    const { qrToken, cleanedSearch } = captureQrTokenFromSearch(location.search)
+    if (!qrToken) {
+      return
+    }
+    qrHandled.current = true
+    navigate({ pathname: "/staff", search: cleanedSearch }, { replace: true })
+    void identifyFromQr(qrToken, departments)
+  }, [
+    departments,
+    identifyFromQr,
+    loading,
+    location.search,
+    navigate,
+  ])
+
+  // Keep simulated "now" fresh so break end times stay ahead of the demo clock.
+  useEffect(() => {
+    const tickMs = clock?.scale === 10 ? 250 : 1_000
+    const timer = window.setInterval(() => {
+      setWallNow(new Date())
+    }, tickMs)
+    return () => window.clearInterval(timer)
+  }, [clock?.scale])
 
   useEffect(() => {
     if (!client) {
@@ -394,6 +463,38 @@ export function StaffDashboard() {
         </p>
       ) : null}
 
+      <section className="panel" aria-label={messages.staffQrScanTitle}>
+        <h2>{messages.staffQrScanTitle}</h2>
+        <p>{messages.staffQrScanHint}</p>
+        {scannerOpen ? (
+          <QrScanner
+            active={scannerOpen}
+            onDetected={(qrToken) => {
+              setScannerOpen(false)
+              void identifyFromQr(qrToken, departments)
+            }}
+            onCancel={() => setScannerOpen(false)}
+            onUnsupported={() => {
+              setScannerOpen(false)
+              setError(messages.qrCameraUnsupported)
+            }}
+          />
+        ) : (
+          <button
+            type="button"
+            className="button"
+            onClick={() => setScannerOpen(true)}
+          >
+            {messages.staffQrScanOpen}
+          </button>
+        )}
+        {highlightedToken ? (
+          <p className="emphasis" role="status">
+            {messages.staffQrIdentified.replace("{token}", highlightedToken)}
+          </p>
+        ) : null}
+      </section>
+
       <section
         className={
           flags.length > 0
@@ -513,7 +614,7 @@ export function StaffDashboard() {
           {waiting.length === 0 ? (
             <p>{messages.queueEmpty}</p>
           ) : (
-            <ul className="token-list">
+            <ul className="waiting-token-grid">
               {waiting.map((entry) => {
                 const ahead = countPeopleAhead({
                   ownTokenNumber: entry.token_number,
@@ -531,11 +632,26 @@ export function StaffDashboard() {
                 })
                 const patient = patients[entry.patient_id]
                 return (
-                  <li key={entry.id}>
-                    <strong>{entry.token_code}</strong>
-                    {patient ? ` · ${patient.display_name}, ${patient.age}` : ""}
-                    {" · "}
-                    {formatAboutWaitMinutes(wait, messages.waitAboutTemplate)}
+                  <li
+                    key={entry.id}
+                    className={
+                      highlightedToken === entry.token_code
+                        ? "waiting-token-card is-highlighted"
+                        : "waiting-token-card"
+                    }
+                  >
+                    <p className="waiting-token-code" dir="ltr">
+                      {entry.token_code}
+                    </p>
+                    {patient ? (
+                      <p className="waiting-token-meta">
+                        {patient.display_name}
+                        <span dir="ltr"> · {patient.age}</span>
+                      </p>
+                    ) : null}
+                    <p className="waiting-token-wait">
+                      {formatAboutWaitMinutes(wait, messages.waitAboutTemplate)}
+                    </p>
                   </li>
                 )
               })}
@@ -713,6 +829,59 @@ export function StaffDashboard() {
           {staffCan(role, "set_doctor_status") ? (
             <div className="stack-gap">
               <h3>{messages.doctorStatus}</h3>
+              <p className="status-line" role="status">
+                {doctorLabel(doctor?.availability, messages)}
+                {doctor?.availability === "on_break" && breakLeft > 0
+                  ? ` · ${breakLeft} ${messages.minutesUnit}`
+                  : null}
+                {doctor?.availability === "running_late" && late > 0
+                  ? ` · ${late} ${messages.minutesUnit}`
+                  : null}
+              </p>
+              <label className="field staff-slider-field">
+                <span>
+                  {messages.breakMinutes}:{" "}
+                  <strong dir="ltr">
+                    {breakMinutes} {messages.minutesUnit}
+                  </strong>
+                </span>
+                <input
+                  type="range"
+                  className="staff-slider"
+                  min={1}
+                  max={120}
+                  step={1}
+                  value={breakMinutes}
+                  aria-valuemin={1}
+                  aria-valuemax={120}
+                  aria-valuenow={breakMinutes}
+                  onChange={(event) =>
+                    setBreakMinutes(Number(event.target.value))
+                  }
+                />
+              </label>
+              <label className="field staff-slider-field">
+                <span>
+                  {messages.delayMinutes}:{" "}
+                  <strong dir="ltr">
+                    {delayMinutes} {messages.minutesUnit}
+                  </strong>
+                </span>
+                <input
+                  type="range"
+                  className="staff-slider"
+                  min={1}
+                  max={240}
+                  step={1}
+                  value={delayMinutes}
+                  aria-valuemin={1}
+                  aria-valuemax={240}
+                  aria-valuenow={delayMinutes}
+                  onChange={(event) =>
+                    setDelayMinutes(Number(event.target.value))
+                  }
+                />
+              </label>
               <div className="choice-row">
                 <button
                   type="button"
@@ -731,12 +900,15 @@ export function StaffDashboard() {
                   className="button button-secondary"
                   disabled={actionBusy}
                   onClick={() => {
-                    const minutes = Number(breakMinutes)
-                    if (!Number.isFinite(minutes) || minutes < 1) {
+                    if (breakMinutes < 1) {
                       setError(messages.invalidBreak)
                       return
                     }
-                    const ends = new Date(now.getTime() + minutes * 60_000)
+                    // Fresh wall/sim time at click — avoids stale page clock
+                    // rejecting break ends under 10× demo time.
+                    const wall = new Date()
+                    const sim = clock ? simulatedNow(clock, wall) : wall
+                    const ends = new Date(sim.getTime() + breakMinutes * 60_000)
                     void runAction(messages.actionDoctorUpdated, (supabase) =>
                       setDoctorStatus(
                         supabase,
@@ -755,8 +927,7 @@ export function StaffDashboard() {
                   className="button button-secondary"
                   disabled={actionBusy}
                   onClick={() => {
-                    const minutes = Number(delayMinutes)
-                    if (!Number.isFinite(minutes) || minutes < 1 || minutes > 240) {
+                    if (delayMinutes < 1 || delayMinutes > 240) {
                       setError(messages.invalidDelay)
                       return
                     }
@@ -765,7 +936,7 @@ export function StaffDashboard() {
                         supabase,
                         selected.id,
                         "running_late",
-                        minutes,
+                        delayMinutes,
                       ),
                     )
                   }}
@@ -773,22 +944,6 @@ export function StaffDashboard() {
                   {messages.doctorLate}
                 </button>
               </div>
-              <label className="field">
-                <span>{messages.breakMinutes}</span>
-                <input
-                  value={breakMinutes}
-                  onChange={(event) => setBreakMinutes(event.target.value)}
-                  inputMode="numeric"
-                />
-              </label>
-              <label className="field">
-                <span>{messages.delayMinutes}</span>
-                <input
-                  value={delayMinutes}
-                  onChange={(event) => setDelayMinutes(event.target.value)}
-                  inputMode="numeric"
-                />
-              </label>
             </div>
           ) : null}
         </section>

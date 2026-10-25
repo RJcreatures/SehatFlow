@@ -639,8 +639,25 @@ export const en = {
   agentAskAge: "What is your age in years?",
   agentAskDepartment: "Which department do you want to register for?",
   agentAskDestination: "Which department or place do you need directions to?",
+  agentAskStart:
+    "Where are you starting from? For example: main entrance, registration, waiting area, or pharmacy.",
   agentNeedTokenContext:
-    "I need your slip first. Open My Slip with your token and access code. I will not guess another patient's token.",
+    "I can help check your turn. Do you have your token number or registration slip saved in this tab?",
+  agentAskTokenCode:
+    "Please say your full token code from the slip, like GM-024.",
+  agentAskAccessCode:
+    "Please say the 8-character access code printed on your slip. I need both the token and access code to check your turn securely.",
+  agentAskTokenAndAccess:
+    "I can check your turn securely. Please say your token code and the 8-character access code from your slip.",
+  agentTokenLookupFailed:
+    "That token and access code did not match. Check the slip and try again, or ask the registration desk.",
+  agentTokenLookupRateLimited:
+    "Too many failed lookups. Please open My Slip, register again, or ask the registration desk for help.",
+  agentOpenDirections: "Open these directions",
+  agentClarifyCapabilities:
+    "I can help with your token, waiting time, registration, or hospital directions. Which do you need?",
+  agentQueueUnavailable:
+    "I can't retrieve the current queue right now. Please check your slip or ask the registration desk.",
   agentClarifyRegister: "Tell me the department, your name, and age.",
   agentRegistered: "Done. Your token is {token}.",
   agentRegisterFailed: "Registration failed. No token was created. Try again.",

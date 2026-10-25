@@ -546,7 +546,16 @@ export type MessageCatalog = {
   agentAskAge: string
   agentAskDepartment: string
   agentAskDestination: string
+  agentAskStart: string
   agentNeedTokenContext: string
+  agentAskTokenCode: string
+  agentAskAccessCode: string
+  agentAskTokenAndAccess: string
+  agentTokenLookupFailed: string
+  agentTokenLookupRateLimited: string
+  agentOpenDirections: string
+  agentClarifyCapabilities: string
+  agentQueueUnavailable: string
   agentClarifyRegister: string
   agentRegistered: string
   agentRegisterFailed: string

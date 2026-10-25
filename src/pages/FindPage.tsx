@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
+import { useLocation } from "react-router"
 import { HospitalMap } from "../components/HospitalMap.tsx"
 import { PageHeading } from "../components/PageHeading.tsx"
 import {
@@ -27,6 +28,13 @@ import { useAssistantContext } from "../preferences/AssistantContext.tsx"
 import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
 
 type ViewMode = "form" | "route"
+
+/** Prefill from Ask SehatFlow / voice navigation handoff. */
+export type FindLocationState = {
+  fromId?: string
+  toId?: string
+  showRoute?: boolean
+}
 
 function notableWaypoints(result: RouteResult): string[] {
   if (result.status !== "ok") {
@@ -57,16 +65,29 @@ export function FindPage() {
   const messages = useMessages()
   const { preferences } = usePreferences()
   const { setRouteContext } = useAssistantContext()
+  const location = useLocation()
+  const handoff = (location.state as FindLocationState | null) ?? null
 
   const startOptions = useMemo(() => routableStartIds(), [])
   const destinationOptions = useMemo(() => routableDestinationIds(), [])
   const popularIds = useMemo(() => popularDestinationIds(), [])
 
-  const [view, setView] = useState<ViewMode>("form")
-  const [fromId, setFromId] = useState("")
-  const [toId, setToId] = useState("")
-  const [fromQuery, setFromQuery] = useState("")
-  const [toQuery, setToQuery] = useState("")
+  const initialFrom =
+    handoff?.fromId && isRoutableNodeId(handoff.fromId) ? handoff.fromId : ""
+  const initialTo =
+    handoff?.toId && isRoutableNodeId(handoff.toId) ? handoff.toId : ""
+
+  const [view, setView] = useState<ViewMode>(() =>
+    initialFrom && initialTo && handoff?.showRoute !== false ? "route" : "form",
+  )
+  const [fromId, setFromId] = useState(initialFrom)
+  const [toId, setToId] = useState(initialTo)
+  const [fromQuery, setFromQuery] = useState(() =>
+    initialFrom ? landmarkLabel(messages, initialFrom) : "",
+  )
+  const [toQuery, setToQuery] = useState(() =>
+    initialTo ? landmarkLabel(messages, initialTo) : "",
+  )
   const [fromSuggestions, setFromSuggestions] = useState<LocationMatchCandidate[]>(
     [],
   )
@@ -75,6 +96,33 @@ export function FindPage() {
   const [toError, setToError] = useState<string | null>(null)
   const [floorView, setFloorView] = useState<FloorId | "all">("all")
   const [activeStep, setActiveStep] = useState(0)
+
+  useEffect(() => {
+    const next = (location.state as FindLocationState | null) ?? null
+    if (!next?.fromId && !next?.toId) {
+      return
+    }
+    if (next.fromId && isRoutableNodeId(next.fromId)) {
+      setFromId(next.fromId)
+      setFromQuery(landmarkLabel(messages, next.fromId))
+      setFromError(null)
+    }
+    if (next.toId && isRoutableNodeId(next.toId)) {
+      setToId(next.toId)
+      setToQuery(landmarkLabel(messages, next.toId))
+      setToError(null)
+    }
+    if (
+      next.fromId &&
+      next.toId &&
+      isRoutableNodeId(next.fromId) &&
+      isRoutableNodeId(next.toId) &&
+      next.showRoute !== false
+    ) {
+      setView("route")
+      setActiveStep(0)
+    }
+  }, [location.state, messages])
 
   const canShowRoute =
     Boolean(fromId) &&

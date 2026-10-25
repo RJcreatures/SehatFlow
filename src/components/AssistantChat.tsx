@@ -9,7 +9,10 @@ import {
 } from "react"
 import { Link, useNavigate } from "react-router"
 import { runAgentTurn } from "../domain/agent/runAgent.ts"
-import type { RegistrationDraft } from "../domain/agent/types.ts"
+import type {
+  NavigationHandoff,
+  RegistrationDraft,
+} from "../domain/agent/types.ts"
 import type { RouteMode } from "../domain/navigation/types.ts"
 import type {
   DepartmentFact,
@@ -38,6 +41,7 @@ type ChatMessage = {
   needsMyTurn?: boolean
   openRegister?: boolean
   openSlip?: boolean
+  navigationHandoff?: NavigationHandoff | null
 }
 
 type Props = {
@@ -77,7 +81,7 @@ export function AssistantChat({
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [awaitingField, setAwaitingField] = useState<
-    "need_name" | "need_age" | "need_department" | null
+    "need_name" | "need_age" | "need_department" | "need_start" | null
   >(null)
   const [registrationDraft, setRegistrationDraft] =
     useState<RegistrationDraft | null>(null)
@@ -98,6 +102,7 @@ export function AssistantChat({
     needsMyTurn?: boolean
     openRegister?: boolean
     openSlip?: boolean
+    navigationHandoff?: NavigationHandoff | null
   }) {
     setThread((prev) => [
       ...prev,
@@ -114,6 +119,7 @@ export function AssistantChat({
         needsMyTurn: input.needsMyTurn,
         openRegister: input.openRegister,
         openSlip: input.openSlip,
+        navigationHandoff: input.navigationHandoff,
       },
     ])
   }
@@ -134,6 +140,7 @@ export function AssistantChat({
       needsMyTurn: result.needsMyTurn,
       openRegister: result.openRegister,
       openSlip: result.openSlip,
+      navigationHandoff: result.navigationHandoff,
     })
     // Keep the voice session alive — do not force-navigate away mid-conversation.
   }
@@ -188,7 +195,7 @@ export function AssistantChat({
       messages,
       departments,
       routeMode,
-      startId,
+      startId: assistant.route?.startId ?? startId,
       awaitingField,
       draft: registrationDraft,
       liveQueue: assistant.liveQueue,
@@ -277,6 +284,20 @@ export function AssistantChat({
                   onClick={onClose}
                 >
                   {messages.voiceGoEmergency}
+                </Link>
+              ) : null}
+              {latest.navigationHandoff ? (
+                <Link
+                  className="button"
+                  to="/find"
+                  state={{
+                    fromId: latest.navigationHandoff.startId,
+                    toId: latest.navigationHandoff.destinationId,
+                    showRoute: true,
+                  }}
+                  onClick={onClose}
+                >
+                  {messages.agentOpenDirections}
                 </Link>
               ) : null}
               {latest.needsMyTurn ? (

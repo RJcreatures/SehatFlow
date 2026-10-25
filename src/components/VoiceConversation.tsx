@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react"
 import { Link } from "react-router"
 import type { LiveQueueHint } from "../domain/agent/execute.ts"
 import { runAgentTurn } from "../domain/agent/runAgent.ts"
-import type { RegistrationDraft } from "../domain/agent/types.ts"
+import type {
+  NavigationHandoff,
+  RegistrationDraft,
+} from "../domain/agent/types.ts"
 import {
   type DepartmentFact,
   type TokenContext,
@@ -50,11 +53,21 @@ type Props = {
   orbMode?: boolean
   /** @deprecated Prefer orbMode — kept for any leftover compact embeds. */
   chatMode?: boolean
-  awaitingField?: "need_name" | "need_age" | "need_department" | null
+  awaitingField?:
+    | "need_name"
+    | "need_age"
+    | "need_department"
+    | "need_start"
+    | null
   registrationDraft?: RegistrationDraft | null
   liveQueue?: LiveQueueHint | null
   onAgentState?: (state: {
-    awaitingField: "need_name" | "need_age" | "need_department" | null
+    awaitingField:
+      | "need_name"
+      | "need_age"
+      | "need_department"
+      | "need_start"
+      | null
     draft: RegistrationDraft | null
     tokenUpdate?: TokenContext | null
   }) => void
@@ -66,6 +79,7 @@ type Props = {
     openRegister?: boolean
     openSlip?: boolean
     navigateTo?: string | null
+    navigationHandoff?: NavigationHandoff | null
   }) => void
 }
 
@@ -139,6 +153,7 @@ export function VoiceConversation({
   const micRef = useRef<ReturnType<typeof createMicCapture> | null>(null)
   const playbackRef = useRef<ReturnType<typeof createPlaybackQueue> | null>(null)
   const activeTurnRef = useRef<string | null>(null)
+  const turnInFlightRef = useRef<string | null>(null)
   const mutedRef = useRef(false)
   const holdUplinkRef = useRef(false)
   const speakDoneRef = useRef(false)
@@ -491,6 +506,13 @@ export function VoiceConversation({
     heardText: string,
     rawIntent: unknown,
   ) {
+    if (turnInFlightRef.current && turnInFlightRef.current !== turnId) {
+      pushDebug("skip_duplicate_turn", { turnId })
+      return
+    }
+    turnInFlightRef.current = turnId
+    activeTurnRef.current = turnId
+
     let intent =
       parseVoiceIntent(rawIntent) ?? {
         intent: "unknown" as const,
@@ -509,18 +531,25 @@ export function VoiceConversation({
       }
     }
 
-    const agentResult = await runAgentTurn({
-      intent,
-      utterance: heardText,
-      client,
-      messages,
-      departments,
-      routeMode,
-      startId,
-      awaitingField: awaitingFieldRef.current,
-      draft: registrationDraftRef.current,
-      liveQueue: liveQueueRef.current,
-    })
+    let agentResult: Awaited<ReturnType<typeof runAgentTurn>>
+    try {
+      agentResult = await runAgentTurn({
+        intent,
+        utterance: heardText,
+        client,
+        messages,
+        departments,
+        routeMode,
+        startId,
+        awaitingField: awaitingFieldRef.current,
+        draft: registrationDraftRef.current,
+        liveQueue: liveQueueRef.current,
+      })
+    } finally {
+      if (turnInFlightRef.current === turnId) {
+        turnInFlightRef.current = null
+      }
+    }
     onAgentState?.({
       awaitingField: agentResult.awaitingField,
       draft: agentResult.draft,
@@ -546,6 +575,7 @@ export function VoiceConversation({
       openRegister: agentResult.openRegister,
       openSlip: agentResult.openSlip,
       navigateTo: agentResult.navigateTo,
+      navigationHandoff: agentResult.navigationHandoff,
     })
     // Stay in the voice session — action links in the parent handle navigation.
 

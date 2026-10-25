@@ -1,3 +1,5 @@
+import { hospitalGraph } from "../navigation/hospitalGraph.ts"
+import { routableStartIds } from "../navigation/landmarkCatalog.ts"
 import {
   AGENT_TOOLS,
   isAgentToolName,
@@ -6,16 +8,10 @@ import {
   type AgentToolName,
   type RegisterPatientArgs,
 } from "./types.ts"
+import { resolveDestinationNodeId } from "./navigationTarget.ts"
 
 const DEPARTMENT_PATTERN = /^[a-z0-9_]{2,32}$/
-const LANDMARKS = new Set([
-  "entrance",
-  "reception",
-  "help_desk",
-  "lift_g",
-  "ramp_g",
-  "water_station",
-])
+const START_LANDMARKS = new Set(routableStartIds())
 
 /**
  * Strict allowlist validation. Unknown tools/args are rejected — never executed.
@@ -40,6 +36,23 @@ export function parseAgentToolCall(raw: unknown): AgentToolCall | null {
     case "list_departments":
     case "app_help":
       return { tool, args: {} }
+    case "token_lookup": {
+      if (
+        typeof args.token_code !== "string" ||
+        typeof args.access_code !== "string"
+      ) {
+        return null
+      }
+      const token_code = args.token_code.trim().toUpperCase()
+      const access_code = args.access_code.trim().toUpperCase()
+      if (
+        !/^[A-Z0-9]{1,8}-[0-9]{1,4}$/.test(token_code) ||
+        !/^[A-Z0-9]{8}$/.test(access_code)
+      ) {
+        return null
+      }
+      return { tool, args: { token_code, access_code } }
+    }
     case "submit_help_request": {
       const department_code =
         typeof args.department_code === "string" &&
@@ -55,15 +68,16 @@ export function parseAgentToolCall(raw: unknown): AgentToolCall | null {
       return { tool, args: { destination: args.destination } }
     }
     case "find_route": {
-      if (
-        typeof args.destination_code !== "string" ||
-        !DEPARTMENT_PATTERN.test(args.destination_code)
-      ) {
+      if (typeof args.destination_code !== "string") {
+        return null
+      }
+      const destinationNode = resolveDestinationNodeId(args.destination_code)
+      if (!destinationNode || !hospitalGraph.nodes[destinationNode]) {
         return null
       }
       const start =
         typeof args.start_landmark === "string" &&
-        LANDMARKS.has(args.start_landmark)
+        START_LANDMARKS.has(args.start_landmark)
           ? args.start_landmark
           : "entrance"
       const route_mode =
@@ -71,7 +85,7 @@ export function parseAgentToolCall(raw: unknown): AgentToolCall | null {
       return {
         tool,
         args: {
-          destination_code: args.destination_code,
+          destination_code: destinationNode,
           start_landmark: start,
           route_mode,
         },

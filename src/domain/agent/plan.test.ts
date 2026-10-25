@@ -56,7 +56,7 @@ describe("agent planner tool selection", () => {
     })
   })
 
-  it("asks for My Turn when token context is missing", () => {
+  it("asks for token and access when slip context is missing", () => {
     const plan = planAgentAction({
       intent: intent("current_token"),
       utterance: "What is my token number?",
@@ -68,7 +68,8 @@ describe("agent planner tool selection", () => {
     })
     expect(plan.kind).toBe("clarify")
     if (plan.kind === "clarify") {
-      expect(plan.messageKey).toBe("need_token_context")
+      expect(plan.messageKey).toBe("need_token_and_access")
+      expect(plan.tool).toBe("token_lookup")
     }
   })
 
@@ -145,10 +146,42 @@ describe("agent planner tool selection", () => {
     })
   })
 
+  it("plans find_route for facilities and cardiology landmarks", () => {
+    const lab = planAgentAction({
+      intent: intent("unknown"),
+      utterance: "Where is the nearest washroom from registration?",
+      context: {
+        hasVerifiedSlip: false,
+        registrationDraft: null,
+        awaitingField: null,
+      },
+    })
+    expect(lab.kind).toBe("tool")
+    if (lab.kind === "tool" && lab.call.tool === "find_route") {
+      expect(lab.call.args.destination_code).toBe("washroom_g")
+      expect(lab.call.args.start_landmark).toBe("registration")
+    }
+
+    const cardio = planAgentAction({
+      intent: intent("accessible_route"),
+      utterance: "Where is cardiology?",
+      context: {
+        hasVerifiedSlip: false,
+        registrationDraft: null,
+        awaitingField: null,
+      },
+    })
+    expect(cardio).toMatchObject({
+      kind: "clarify",
+      messageKey: "need_start",
+      pendingDestination: "dept_cardiology",
+    })
+  })
+
   it("plans find_route for directions with a known department", () => {
     const plan = planAgentAction({
       intent: intent("accessible_route"),
-      utterance: "How do I get to Pediatrics?",
+      utterance: "How do I get to Pediatrics from the entrance?",
       context: {
         hasVerifiedSlip: false,
         registrationDraft: null,
@@ -159,7 +192,8 @@ describe("agent planner tool selection", () => {
     if (plan.kind === "tool") {
       expect(plan.call.tool).toBe("find_route")
       if (plan.call.tool === "find_route") {
-        expect(plan.call.args.destination_code).toBe("pediatrics")
+        expect(plan.call.args.destination_code).toBe("dept_pediatrics")
+        expect(plan.call.args.start_landmark).toBe("entrance")
       }
     }
   })

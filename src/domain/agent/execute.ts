@@ -35,7 +35,11 @@ import {
   speakRouteBrief,
 } from "./spoken.ts"
 import { parseAgentToolCall } from "./validate.ts"
-import type { AgentToolCall, OpenDestination } from "./types.ts"
+import type {
+  AgentToolCall,
+  NavigationHandoff,
+  OpenDestination,
+} from "./types.ts"
 
 export type AgentExecutionResult = {
   ok: boolean
@@ -45,6 +49,7 @@ export type AgentExecutionResult = {
   openRegister?: boolean
   openSlip?: boolean
   navigateTo?: string | null
+  navigationHandoff?: NavigationHandoff | null
   tokenUpdate?: TokenContext | null
   registration?: RegisterPatientResponse | null
 }
@@ -107,6 +112,8 @@ export async function executeAgentTool(input: {
         true,
         input.liveQueue,
       )
+    case "token_lookup":
+      return executeTokenLookup(call, input.client, input.messages, input.liveQueue)
     case "list_departments":
       return executeListDepartments(input.messages, input.departments)
     case "find_route":
@@ -161,7 +168,7 @@ async function executeGetMyTurn(
   if (error || !data) {
     return {
       ok: false,
-      spoken: messages.agentNeedTokenContext,
+      spoken: messages.agentQueueUnavailable,
       needsMyTurn: true,
     }
   }
@@ -185,6 +192,69 @@ async function executeGetMyTurn(
     ok: true,
     spoken,
     tokenUpdate: token,
+  }
+}
+
+async function executeTokenLookup(
+  call: Extract<AgentToolCall, { tool: "token_lookup" }>,
+  client: AppSupabase | null,
+  messages: MessageCatalog,
+  liveQueue?: LiveQueueHint | null,
+): Promise<AgentExecutionResult> {
+  if (!client) {
+    return {
+      ok: false,
+      spoken: messages.backendUnconfigured,
+      needsMyTurn: true,
+    }
+  }
+
+  const { data, error } = await getMyTurn(client, {
+    token_code: call.args.token_code,
+    access_code: call.args.access_code,
+  })
+  if (error || !data || (typeof data === "object" && "error" in data)) {
+    return {
+      ok: false,
+      spoken: messages.agentTokenLookupFailed,
+      needsMyTurn: true,
+    }
+  }
+
+  saveSlip({
+    token_code: data.token_code,
+    access_code: call.args.access_code,
+    department_code: data.department_code,
+    department_name_en: data.department_name_en,
+    department_name_hi: data.department_name_hi,
+    room_en: data.room_en,
+    room_hi: data.room_hi,
+    floor_en: data.floor_en,
+    floor_hi: data.floor_hi,
+    estimated_wait_minutes: data.estimated_wait_minutes ?? 0,
+    service_date: data.service_date,
+  })
+
+  const displayMinutes =
+    liveQueue &&
+    liveQueue.token_code === data.token_code &&
+    liveQueue.display_minutes != null
+      ? liveQueue.display_minutes
+      : null
+
+  const token = toTokenContext(data, messages, displayMinutes)
+  const spoken = speakLiveTurn({
+    data,
+    messages,
+    mode: "token",
+    displayMinutes,
+  })
+
+  return {
+    ok: true,
+    spoken,
+    tokenUpdate: token,
+    openSlip: true,
   }
 }
 
@@ -224,7 +294,10 @@ function executeFindRoute(
   routeMode: RouteMode = "assisted",
   startId = "entrance",
 ): AgentExecutionResult {
-  const destId = departmentDestinationId(call.args.destination_code)
+  const destId =
+    hospitalGraph.nodes[call.args.destination_code]
+      ? call.args.destination_code
+      : departmentDestinationId(call.args.destination_code)
   if (!destId || !hospitalGraph.nodes[destId]) {
     return { ok: false, spoken: messages.voiceUnknownDepartment }
   }
@@ -240,10 +313,15 @@ function executeFindRoute(
     return { ok: false, spoken: messages.findNoRoute }
   }
   const steps = resolved.answer.split(/(?<=[.!?])\s+/).filter(Boolean)
+  const navigationHandoff: NavigationHandoff = {
+    startId: start,
+    destinationId: destId,
+  }
   return {
     ok: true,
     spoken: speakRouteBrief(messages, steps),
     navigateTo: "/find",
+    navigationHandoff,
   }
 }
 

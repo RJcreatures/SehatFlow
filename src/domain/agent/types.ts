@@ -3,6 +3,7 @@
 export const AGENT_TOOLS = [
   "get_my_turn",
   "get_wait_estimate",
+  "token_lookup",
   "list_departments",
   "find_route",
   "register_patient",
@@ -47,9 +48,21 @@ export type SubmitHelpArgs = {
   department_code: string | null
 }
 
+export type TokenLookupArgs = {
+  token_code: string
+  access_code: string
+}
+
+/** Prefill payload for the existing /find screen. */
+export type NavigationHandoff = {
+  startId: string
+  destinationId: string
+}
+
 export type AgentToolCall =
   | { tool: "get_my_turn"; args: Record<string, never> }
   | { tool: "get_wait_estimate"; args: Record<string, never> }
+  | { tool: "token_lookup"; args: TokenLookupArgs }
   | { tool: "list_departments"; args: Record<string, never> }
   | { tool: "find_route"; args: FindRouteArgs }
   | { tool: "register_patient"; args: RegisterPatientArgs }
@@ -59,17 +72,37 @@ export type AgentToolCall =
 
 export type AgentPlan =
   | { kind: "tool"; call: AgentToolCall }
-  | { kind: "clarify"; messageKey: AgentClarifyKey; tool: AgentToolName }
+  | AgentClarifyPlan
   | { kind: "unsupported" }
-  | { kind: "say"; messageKey: "app_help" | "registration_help" | "emergency" }
+  | {
+      kind: "say"
+      messageKey:
+        | "app_help"
+        | "registration_help"
+        | "emergency"
+        | "repeat_last"
+    }
 
 export type AgentClarifyKey =
   | "need_name"
   | "need_age"
   | "need_department"
   | "need_destination"
+  | "need_start"
   | "need_token_context"
+  | "need_token_code"
+  | "need_access_code"
+  | "need_token_and_access"
   | "need_clarify_register"
+  | "token_lookup_rate_limited"
+
+export type AgentClarifyPlan = {
+  kind: "clarify"
+  messageKey: AgentClarifyKey
+  tool: AgentToolName
+  /** Destination waiting on a start landmark (directions). */
+  pendingDestination?: string
+}
 
 export type RegistrationDraft = {
   display_name: string | null

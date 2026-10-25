@@ -13,8 +13,12 @@ Use registration_help when they ask how to register, get a token, or recover a t
 department_code and destination_code must be one of these or null:
 general_medicine, pediatrics, womens_health, orthopedics, ent, ophthalmology, dermatology
 
-start_landmark must be one of these or null:
-entrance, reception, help_desk, lift_g, ramp_g, water_station
+start_landmark must be one of these graph ids or null:
+entrance, opd_entrance, registration, opd_reception, waiting_area, help_desk, lift_g, ramp_g, water_station, washroom_g, pharmacy, laboratory
+
+Use accessible_route for directions, facilities (washroom, water, lab, pharmacy), or department locations.
+Use wait_estimate for how long until turn or people ahead.
+Use current_token for token number or queue status.
 
 confidence is a number from 0 to 1.
 Do not invent rooms, medical advice, diagnoses, or hospital policies.

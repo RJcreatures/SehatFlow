@@ -23,6 +23,15 @@ export const hi = {
   notFoundTitle: "यह पेज नहीं मिला",
   notFoundBody: "यह पता इस प्रदर्शन में नहीं है।",
   homeGreeting: "आज हम आपकी कैसे मदद करें?",
+  liveQueuesTitle: "लाइव कतारें",
+  liveQueuesHint:
+    "काल्पनिक ओपीडी टोकन अभी अपडेट हो रहे हैं। रजिस्टर करें या पूरी बोर्ड खोलें।",
+  liveQueuesOpenBoard: "पूरी बोर्ड",
+  liveQueuesNowServing: "अभी {token}",
+  liveQueuesQuiet: "कोई कॉल नहीं",
+  liveQueuesWaiting: "अगले: {tokens}",
+  liveQueuesNoWaiting: "कोई प्रतीक्षा नहीं",
+  liveQueuesLoadError: "लाइव कतारें लोड नहीं हो सकीं।",
   register: "पंजीकरण",
   registerHint: "ओपीडी मुलाक़ात शुरू करें",
   myTurn: "मेरे पास पर्ची है",
@@ -398,6 +407,10 @@ export const hi = {
   contrastHigh: "ऊँचा कंट्रास्ट",
   savedOnDevice: "आपका चुनाव इस डिवाइस पर सहेजा जाता है।",
   staffTitle: "स्टाफ",
+  staffHomeLink: "स्टाफ डैशबोर्ड",
+  staffDemoLogin: "जजों के लिए डेमो लॉगिन",
+  staffDemoLoginHint:
+    "काल्पनिक अस्पताल डेमो के लिए एक क्लिक में साइन इन। ईमेल या पासवर्ड की जरूरत नहीं।",
   staffAuthNotice:
     "असली अस्पताल में सख्त पहुँच नियंत्रण ज़रूरी हैं। इस प्रदर्शन में केवल स्टाफ के लिए Supabase Auth है। सार्वजनिक स्टाफ पंजीकरण नहीं है।",
   staffBody: "काल्पनिक अस्पताल की कतार डैशबोर्ड खोलने के लिए साइन इन करें।",

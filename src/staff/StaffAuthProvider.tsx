@@ -11,6 +11,7 @@ import {
   readSupabaseState,
 } from "../lib/supabase/client.ts"
 import { supabaseErrorMessage } from "../lib/supabase/errors.ts"
+import { demoStaffLogin } from "../lib/supabase/patientApi.ts"
 import type { StaffRole } from "../lib/supabase/database.types.ts"
 import {
   StaffAuthContext,
@@ -149,6 +150,34 @@ export function StaffAuthProvider({ children }: Props) {
     [client],
   )
 
+  const signInDemo = useCallback(async () => {
+    if (!client) {
+      setError("Supabase is not configured.")
+      return
+    }
+    setBusy(true)
+    setError(null)
+    const { data, error: demoError } = await demoStaffLogin(client)
+    if (demoError || !data?.access_token || !data.refresh_token) {
+      setBusy(false)
+      setError(
+        supabaseErrorMessage(
+          demoError ?? new Error("Demo login failed."),
+          "Demo login failed.",
+        ),
+      )
+      return
+    }
+    const { error: sessionError } = await client.auth.setSession({
+      access_token: data.access_token,
+      refresh_token: data.refresh_token,
+    })
+    setBusy(false)
+    if (sessionError) {
+      setError(supabaseErrorMessage(sessionError, "Demo login failed."))
+    }
+  }, [client])
+
   const signOut = useCallback(async () => {
     if (!client) {
       return
@@ -173,6 +202,7 @@ export function StaffAuthProvider({ children }: Props) {
       error,
       busy,
       signIn,
+      signInDemo,
       signOut,
       clearError: () => setError(null),
     }),
@@ -185,6 +215,7 @@ export function StaffAuthProvider({ children }: Props) {
       error,
       busy,
       signIn,
+      signInDemo,
       signOut,
     ],
   )

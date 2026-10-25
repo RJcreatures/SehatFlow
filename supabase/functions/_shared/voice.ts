@@ -71,16 +71,70 @@ const DEPARTMENT_CODES = new Set([
   "ent",
   "ophthalmology",
   "dermatology",
+  "cardiology",
+  "dental",
+  "physiotherapy",
+])
+
+const DESTINATION_CODES = new Set([
+  ...DEPARTMENT_CODES,
+  "laboratory",
+  "pharmacy",
+  "billing",
+  "radiology",
+  "washroom_g",
+  "water_station",
+  "registration",
+  "entrance",
+  "opd_entrance",
+  "waiting_area",
+  "help_desk",
+  "opd_reception",
+  "security_desk",
+  "lift_g",
+  "ramp_g",
+  "stairs_g",
+  "blood_collection",
+  "dept_general_medicine",
+  "dept_pediatrics",
+  "dept_womens_health",
+  "dept_orthopedics",
+  "dept_ent",
+  "dept_ophthalmology",
+  "dept_dermatology",
+  "dept_cardiology",
+  "dept_dental",
+  "dept_physiotherapy",
 ])
 
 const LANDMARKS = new Set([
   "entrance",
-  "reception",
+  "opd_entrance",
+  "registration",
+  "opd_reception",
+  "waiting_area",
   "help_desk",
+  "security_desk",
   "lift_g",
   "ramp_g",
+  "stairs_g",
   "water_station",
+  "washroom_g",
+  "pharmacy",
+  "laboratory",
+  "billing",
+  "reception",
 ])
+
+const DESTINATION_ALIASES: Record<string, string> = {
+  lab: "laboratory",
+  washroom: "washroom_g",
+  toilet: "washroom_g",
+  restroom: "washroom_g",
+  water: "water_station",
+  cardio: "cardiology",
+  heart: "cardiology",
+}
 
 /** STT BCP-47 codes for SehatFlow UI languages (Saaras). */
 export const STT_CODES: Record<UiLanguage, string> = {
@@ -160,32 +214,38 @@ export function parseVoiceIntent(raw: unknown): VoiceIntent | null {
 
   let destination_code: string | null = null
   if (typeof record.destination_code === "string") {
-    const code = record.destination_code.trim().toLowerCase()
-    destination_code = DEPARTMENT_CODES.has(code) ? code : null
+    const raw = record.destination_code.trim().toLowerCase().replace(/\s+/g, "_")
+    const aliased = DESTINATION_ALIASES[raw] ?? raw
+    destination_code =
+      DESTINATION_CODES.has(aliased) || LANDMARKS.has(aliased) ? aliased : null
   }
 
   let start_landmark: string | null = null
   if (typeof record.start_landmark === "string") {
     const landmark = record.start_landmark.trim().toLowerCase()
-    start_landmark = LANDMARKS.has(landmark) ? landmark : null
+    const aliased = DESTINATION_ALIASES[landmark] ?? landmark
+    start_landmark =
+      LANDMARKS.has(aliased) || DESTINATION_CODES.has(aliased) ? aliased : null
   }
 
   const intent = record.intent as VoiceIntentName
+  // Keep accessible_route / department_info even when codes are missing so the
+  // client planner can resolve places from multilingual utterance text.
   if (intent === "department_info" && !department_code) {
     return {
-      intent: "unknown",
+      intent: "department_info",
       department_code: null,
       destination_code: null,
       start_landmark: null,
       confidence,
     }
   }
-  if (intent === "accessible_route" && !destination_code) {
+  if (intent === "accessible_route") {
     return {
-      intent: "unknown",
-      department_code: null,
-      destination_code: null,
-      start_landmark: null,
+      intent: "accessible_route",
+      department_code,
+      destination_code,
+      start_landmark,
       confidence,
     }
   }
@@ -210,6 +270,8 @@ export function unknownIntent(): VoiceIntent {
 }
 
 const INTENT_SYSTEM = `You classify patient questions for a fictional hospital outpatient demo app.
+Questions may be in English, Hindi, Punjabi, Urdu, Bengali, Marathi, Tamil, Telugu, or Gujarati — including native scripts. Classify the meaning, not the language.
+
 Return ONLY a JSON object with keys:
 intent, department_code, destination_code, start_landmark, confidence.
 
@@ -217,21 +279,24 @@ intent must be one of:
 current_token, wait_estimate, department_info, accessible_route, emergency, app_help, registration_help, unknown
 
 Use app_help when the patient asks how SehatFlow or this demo hospital app works.
-Use registration_help when they ask how to register, get a token, or recover a token/slip.
+Use registration_help when they ask how to register, get a token, create a slip, or enroll.
+Use accessible_route for directions, facilities (washroom, water, lab, pharmacy), or department locations — even if destination_code is unclear.
+Use wait_estimate for how long until turn or people ahead.
+Use current_token for token number or queue status.
 
-department_code and destination_code must be one of these or null:
-general_medicine, pediatrics, womens_health, orthopedics, ent, ophthalmology, dermatology
+department_code must be one of these or null:
+general_medicine, pediatrics, womens_health, orthopedics, ent, ophthalmology, dermatology, cardiology, dental, physiotherapy
+
+destination_code must be a department_code above, or one of these graph ids, or null:
+laboratory, pharmacy, billing, radiology, washroom_g, water_station, registration, entrance, waiting_area, help_desk, lift_g, ramp_g
 
 start_landmark must be one of these graph ids or null:
 entrance, opd_entrance, registration, opd_reception, waiting_area, help_desk, lift_g, ramp_g, water_station, washroom_g, pharmacy, laboratory
 
-Use accessible_route for directions, facilities (washroom, water, lab, pharmacy), or department locations.
-Use wait_estimate for how long until turn or people ahead.
-Use current_token for token number or queue status.
-
 confidence is a number from 0 to 1.
 Do not invent rooms, medical advice, diagnoses, or hospital policies.
-If unsure, use intent "unknown" with null codes.
+If unsure of the place but the patient clearly wants directions, still use accessible_route with null destination_code.
+If unsure of the whole request, use intent "unknown" with null codes.
 Never include personal data, tokens, or access codes in the JSON.`
 
 /** Keep in sync with src/domain/voice/providerPayload.ts (Deno cannot import Vite src). */

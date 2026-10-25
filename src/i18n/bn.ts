@@ -23,6 +23,15 @@ export const bn = {
   notFoundTitle: "পৃষ্ঠা পাওয়া যায়নি",
   notFoundBody: "এই ঠিকানাটি এই প্রদর্শনীর অংশ নয়।",
   homeGreeting: "আজ আমরা আপনাকে কীভাবে সাহায্য করতে পারি?",
+  liveQueuesTitle: "লাইভ সারি",
+  liveQueuesHint:
+    "কাল্পনিক OPD টোকেন এখন আপডেট হচ্ছে। নিবন্ধন করুন বা পুরো বোর্ড খুলুন।",
+  liveQueuesOpenBoard: "পুরো বোর্ড",
+  liveQueuesNowServing: "এখন {token}",
+  liveQueuesQuiet: "কেউ ডাকা হয়নি",
+  liveQueuesWaiting: "পরবর্তী: {tokens}",
+  liveQueuesNoWaiting: "কেউ অপেক্ষা করছে না",
+  liveQueuesLoadError: "লাইভ সারি লোড করা যায়নি।",
   register: "নিবন্ধন",
   registerHint: "ওপিডি পরিদর্শন শুরু করুন",
   myTurn: "আমার কাছে স্লিপ আছে",
@@ -400,6 +409,10 @@ export const bn = {
   contrastHigh: "উচ্চ কনট্রাস্ট",
   savedOnDevice: "আপনার পছন্দগুলো এই ডিভাইসে সংরক্ষিত।",
   staffTitle: "কর্মী",
+  staffHomeLink: "কর্মী ড্যাশবোর্ড",
+  staffDemoLogin: "বিচারকদের জন্য ডেমো লগইন",
+  staffDemoLoginHint:
+    "কাল্পনিক হাসপাতাল ডেমোর জন্য এক ক্লিকে সাইন ইন। ইমেল বা পাসওয়ার্ড লাগবে না।",
   staffAuthNotice:
     "আসল হাসপাতালে উৎপাদন অ্যাক্সেস নিয়ন্ত্রণ লাগবে। এই প্রদর্শনীতে শুধুমাত্র কর্মীদের জন্য Supabase Auth আছে। কোনো সর্বজনীন কর্মী নিবন্ধন নেই।",
   staffBody: "কাল্পনিক হাসপাতালের সারি ড্যাশবোর্ড খুলতে সাইন ইন করুন।",

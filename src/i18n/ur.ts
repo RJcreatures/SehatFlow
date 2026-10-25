@@ -23,6 +23,15 @@ export const ur = {
   notFoundTitle: "صفحہ نہیں ملا",
   notFoundBody: "یہ پتہ اس مظاہرے میں شامل نہیں ہے۔",
   homeGreeting: "آج ہم آپ کی کیسے مدد کر سکتے ہیں؟",
+  liveQueuesTitle: "لائیو قطاریں",
+  liveQueuesHint:
+    "فرضی OPD ٹوکن اب اپڈیٹ ہو رہے ہیں۔ رجسٹر کریں یا پورا بورڈ کھولیں۔",
+  liveQueuesOpenBoard: "پورا بورڈ",
+  liveQueuesNowServing: "اب {token}",
+  liveQueuesQuiet: "کوئی کال نہیں",
+  liveQueuesWaiting: "اگلے: {tokens}",
+  liveQueuesNoWaiting: "کوئی انتظار نہیں",
+  liveQueuesLoadError: "لائیو قطاریں لوڈ نہیں ہو سکیں۔",
   register: "رجسٹریشن",
   registerHint: "او پی ڈی ملاقات شروع کریں",
   myTurn: "میرے پاس پرچی ہے",
@@ -400,6 +409,10 @@ export const ur = {
   contrastHigh: "اعلیٰ کنٹراسٹ",
   savedOnDevice: "آپ کے انتخاب اس ڈیوائس پر محفوظ ہیں۔",
   staffTitle: "عملہ",
+  staffHomeLink: "عملہ ڈیش بورڈ",
+  staffDemoLogin: "ججز کے لیے ڈیمو لاگ ان",
+  staffDemoLoginHint:
+    "فرضی ہسپتال ڈیمو کے لیے ایک کلک میں سائن ان۔ ای میل یا پاس ورڈ درکار نہیں۔",
   staffAuthNotice:
     "اصل ہسپتال میں پروڈکشن رسائی کنٹرول ضروری ہوں گے۔ اس مظاہرے میں صرف عملے کے لیے Supabase Auth ہے۔ عوامی عملہ رجسٹریشن نہیں ہے۔",
   staffBody: "فرضی ہسپتال قطار ڈیش بورڈ کھولنے کے لیے سائن ان کریں۔",

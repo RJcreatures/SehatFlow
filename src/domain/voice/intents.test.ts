@@ -29,24 +29,36 @@ describe("voice intent parsing", () => {
     expect(parseVoiceIntent("current_token")).toBeNull()
   })
 
-  it("downgrades department_info without an allowlisted code to unknown", () => {
+  it("keeps department_info when the code is missing so the planner can recover", () => {
     expect(
       parseVoiceIntent({
         intent: "department_info",
-        department_code: "cardiology",
+        department_code: null,
         confidence: 0.8,
-      })?.intent,
-    ).toBe("unknown")
+      }),
+    ).toEqual({
+      intent: "department_info",
+      department_code: null,
+      destination_code: null,
+      start_landmark: null,
+      confidence: 0.8,
+    })
   })
 
-  it("downgrades accessible_route without destination to unknown", () => {
+  it("keeps accessible_route and strips unknown destination codes", () => {
     expect(
       parseVoiceIntent({
         intent: "accessible_route",
         destination_code: "secret_lab",
         confidence: 0.7,
-      })?.intent,
-    ).toBe("unknown")
+      }),
+    ).toEqual({
+      intent: "accessible_route",
+      department_code: null,
+      destination_code: null,
+      start_landmark: null,
+      confidence: 0.7,
+    })
   })
 
   it("clamps confidence and strips invalid landmarks", () => {

@@ -1,6 +1,19 @@
 import type { VoiceIntent } from "../voice/intents.ts"
 import type { ConversationMemory } from "./conversationContext.ts"
 import {
+  utteranceSuggestsAppHelp,
+  utteranceSuggestsDepartmentsList,
+  utteranceSuggestsDirections,
+  utteranceSuggestsEmergency,
+  utteranceSuggestsFacility,
+  utteranceSuggestsFollowupDirections,
+  utteranceSuggestsHelpRequest,
+  utteranceSuggestsQueue,
+  utteranceSuggestsRegister,
+  utteranceSuggestsRepeat,
+  utteranceSuggestsRetrieveSlip,
+} from "./localePhrases.ts"
+import {
   extractTokenCredentials,
   utteranceWantsTokenLookup,
 } from "./tokenLookup.ts"
@@ -25,18 +38,6 @@ export type AgentGoal =
   | { goal: "open"; destination: OpenDestination }
   | { goal: "unsupported" }
 
-const DIRECTIONS_RE =
-  /\b(how (?:do i|to) (?:get|go|reach)|directions?|where is|where(?:'s| are)|nearest|show (?:me )?(?:the )?route|take me to|navigate|find (?:the )?(?:lab|laboratory|washroom|toilet|pharmacy|billing|registration|cardiology|lift|ramp|stairs))\b/i
-
-const REGISTER_RE =
-  /\b(create (?:a |my )?(?:new )?(?:registration )?slip|make (?:a |me (?:a )?)?(?:new )?slip|new (?:registration )?slip|hospital registration(?: slip)?|register(?: me| myself)?|registration help|get (?:a )?new token|new (?:token|patient)|enroll|sign me up|i need (?:a |to )?(?:register|registration|slip))\b/i
-
-const RETRIEVE_SLIP_RE =
-  /\b((?:find|open|show|recover|retrieve|get) (?:my )?(?:existing )?(?:registration )?slip|lost (?:my )?(?:slip|token)|where is my (?:registration )?slip|i lost my (?:slip|token))\b/i
-
-const QUEUE_RE =
-  /\b(how (?:much )?longer|how long(?: left| remaining)?|until my turn|my turn|wait(?:ing)? time|queue (?:status|position)|patients? (?:are )?ahead|people (?:are )?ahead|how many (?:people |patients )?ahead|what(?:'s| is) my (?:token|number|position)|current (?:queue|token|position))\b/i
-
 const CREDENTIAL_SUPPLY_RE =
   /\b([A-Za-z0-9]{1,8}-\d{1,4})\b|\b(?:access(?:\s*code)?|code)\s*(?:is|:)?\s*[A-Za-z0-9]{8}\b/i
 
@@ -44,6 +45,7 @@ const CREDENTIAL_SUPPLY_RE =
  * Classify the user's goal for this turn.
  * Previous token-lookup drafts only continue when the user is still supplying
  * credentials or still asking about their slip/queue — never for unrelated goals.
+ * Multilingual cues use includes()-based matching (ASCII \\b fails on Indic text).
  */
 export function classifyAgentGoal(input: {
   intent: VoiceIntent
@@ -54,58 +56,47 @@ export function classifyAgentGoal(input: {
   const lower = utterance.toLowerCase().trim()
   const name = intent.intent
 
-  if (name === "emergency" || /\b(emergency|ambulance|chest pain)\b/.test(lower)) {
+  if (name === "emergency" || utteranceSuggestsEmergency(utterance)) {
     return { goal: "emergency" }
   }
 
-  if (
-    /\b(repeat|say again|what did you say|can you repeat|once more)\b/.test(
-      lower,
-    ) &&
-    memory?.lastSpoken
-  ) {
+  if (utteranceSuggestsRepeat(utterance) && memory?.lastSpoken) {
     return { goal: "repeat" }
   }
 
   // Directions and registration beat any pending token lookup.
   if (
     name === "accessible_route" ||
-    utteranceMentionsNavigation(lower) ||
-    DIRECTIONS_RE.test(lower)
+    utteranceSuggestsDirections(utterance) ||
+    utteranceSuggestsFacility(utterance)
   ) {
     if (
-      /\b(where is it|where do i go|how do i get there|which way|take me there)\b/.test(
-        lower,
-      ) &&
+      utteranceSuggestsFollowupDirections(utterance) &&
       memory?.lastDestinationNodeId
     ) {
       return { goal: "followup_directions" }
     }
-    // "find my slip" is retrieval, not navigation — checked before generic find.
-    if (!RETRIEVE_SLIP_RE.test(lower)) {
+    if (!utteranceSuggestsRetrieveSlip(utterance)) {
       return { goal: "directions" }
     }
   }
 
   if (
     name === "registration_help" ||
-    (REGISTER_RE.test(lower) &&
-      !/\b(?:from|to|near|at)\s+registration\b/.test(lower) &&
-      !DIRECTIONS_RE.test(lower))
+    (utteranceSuggestsRegister(utterance) &&
+      !utteranceSuggestsDirections(utterance))
   ) {
     return { goal: "register" }
   }
 
-  if (RETRIEVE_SLIP_RE.test(lower)) {
+  if (utteranceSuggestsRetrieveSlip(utterance)) {
     return { goal: "retrieve_slip" }
   }
 
   // Explicit screen navigation ("Open my turn") before queue-status questions.
-  // Do not steal real wayfinding ("Show me directions to the lab").
   if (
-    /\b(open|go to)\b/.test(lower) &&
-    !DIRECTIONS_RE.test(lower) &&
-    !utteranceMentionsNavigation(lower)
+    /\b(open|go to)\b/i.test(lower) &&
+    !utteranceSuggestsDirections(utterance)
   ) {
     const destination = resolveOpenDestination(lower)
     if (destination) {
@@ -113,7 +104,6 @@ export function classifyAgentGoal(input: {
     }
   }
 
-  // Explicit credential supply continues a pending lookup, or starts one.
   if (CREDENTIAL_SUPPLY_RE.test(utterance)) {
     const extracted = extractTokenCredentials(utterance)
     if (extracted.tokenCode || extracted.accessCode) {
@@ -125,45 +115,34 @@ export function classifyAgentGoal(input: {
     utteranceWantsTokenLookup(utterance) ||
     name === "current_token" ||
     name === "wait_estimate" ||
-    QUEUE_RE.test(lower)
+    utteranceSuggestsQueue(utterance)
   ) {
     return { goal: "queue_status" }
   }
 
-  // Pending lookup: only continue if the utterance is a short credential reply
-  // (not a new goal). Short replies while awaiting token/access.
   if (isPendingTokenLookup(memory) && looksLikeCredentialReply(utterance)) {
     return { goal: "token_credentials" }
   }
 
-  if (
-    name === "department_info" ||
-    /\b(departments?|list (?:the )?departments|which departments|available clinics)\b/.test(
-      lower,
-    )
-  ) {
+  if (name === "department_info" || utteranceSuggestsDepartmentsList(utterance)) {
     return { goal: "list_departments" }
   }
 
-  if (/\b(need help|call (?:for )?help|staff help|request help)\b/.test(lower)) {
+  if (utteranceSuggestsHelpRequest(utterance)) {
     return { goal: "help_request" }
   }
 
-  if (
-    name === "app_help" ||
-    /\b(how (?:do i|to) use|what can you do|help me use|app help)\b/.test(lower)
-  ) {
+  if (name === "app_help" || utteranceSuggestsAppHelp(utterance)) {
     return { goal: "app_help" }
   }
 
-  if (/\b(open|go to|take me to|show)\b/.test(lower)) {
+  if (/\b(open|go to|take me to|show)\b/i.test(lower)) {
     const destination = resolveOpenDestination(lower)
     if (destination) {
       return { goal: "open", destination }
     }
   }
 
-  // Stale pending lookup must NOT claim unknown/unsupported turns.
   return { goal: "unsupported" }
 }
 
@@ -181,12 +160,6 @@ export function goalClearsTokenLookup(goal: AgentGoal["goal"]): boolean {
   )
 }
 
-function utteranceMentionsNavigation(lower: string): boolean {
-  return /\b(washroom|toilet|restroom|bathroom|water|pharmacy|laboratory|lab|radiology|billing|cardiology|heart|lift|ramp|stairs|registration desk)\b/.test(
-    lower,
-  )
-}
-
 function isPendingTokenLookup(
   memory: ConversationMemory | null | undefined,
 ): boolean {
@@ -194,7 +167,10 @@ function isPendingTokenLookup(
   if (!draft) {
     return false
   }
-  return Boolean(draft.tokenCode || draft.accessCode) || memory?.lastTopic === "token_lookup"
+  return (
+    Boolean(draft.tokenCode || draft.accessCode) ||
+    memory?.lastTopic === "token_lookup"
+  )
 }
 
 function looksLikeCredentialReply(utterance: string): boolean {
@@ -202,7 +178,10 @@ function looksLikeCredentialReply(utterance: string): boolean {
   if (trimmed.length > 48) {
     return false
   }
-  if (DIRECTIONS_RE.test(trimmed) || REGISTER_RE.test(trimmed)) {
+  if (
+    utteranceSuggestsDirections(trimmed) ||
+    utteranceSuggestsRegister(trimmed)
+  ) {
     return false
   }
   const extracted = extractTokenCredentials(utterance)
@@ -213,7 +192,7 @@ function resolveOpenDestination(lower: string): OpenDestination | null {
   if (/\b(my turn|token status|queue status)\b/.test(lower)) {
     return "my_turn"
   }
-  if (/\b(my slip|slip|qr)\b/.test(lower) && !REGISTER_RE.test(lower)) {
+  if (/\b(my slip|slip|qr)\b/.test(lower) && !utteranceSuggestsRegister(lower)) {
     return "slip"
   }
   if (/\b(find|map|directions?|navigate)\b/.test(lower)) {

@@ -34,6 +34,19 @@ function destinationFocusText(utterance: string): string {
   if (whereMatch?.[1]) {
     return whereMatch[1].trim()
   }
+  // Hindi / Indic: "लैब कहाँ है", "कार्डियोलॉजी का रास्ता"
+  const hiWhere = utterance.match(
+    /(.+?)\s*(?:कहाँ है|कहा है|कहां है|किते है|کوথায়|کيٿھے|کहाँ ہے|எங்கே|ఎక్కడ|ક્યાં છે)\s*[?।.!]?$/u,
+  )
+  if (hiWhere?.[1]) {
+    return hiWhere[1].replace(/^(?:मुझे|please|pls)\s+/u, "").trim()
+  }
+  const hiRoute = utterance.match(
+    /(.+?)\s*(?:का रास्ता|की दिशा|का मार्ग|નો રસ્તો|దారి|வழி)\s*[?।.!]?$/u,
+  )
+  if (hiRoute?.[1]) {
+    return hiRoute[1].trim()
+  }
   return utterance
 }
 
@@ -74,6 +87,12 @@ export function resolveDestinationNodeId(
       }
     }
 
+    // Accept department codes / graph ids from voice intent (e.g. cardiology).
+    const byDeptCode = departmentDestinationId(text.trim().toLowerCase())
+    if (byDeptCode) {
+      return byDeptCode
+    }
+
     const destMatch = matchDestinationText(text, routableDestinationIds())
     if (destMatch.status === "exact") {
       return destMatch.candidate.id
@@ -82,6 +101,12 @@ export function resolveDestinationNodeId(
 
   if (hint && hospitalGraph.nodes[hint]) {
     return hint
+  }
+  if (hint) {
+    const byDept = departmentDestinationId(hint.trim().toLowerCase())
+    if (byDept) {
+      return byDept
+    }
   }
 
   return null
@@ -192,8 +217,13 @@ export function extractRouteEnds(utterance: string): {
 }
 
 export function utteranceMentionsFacility(text: string): boolean {
-  return /\b(washroom|toilet|restroom|bathroom|water|pharmacy|laboratory|lab|radiology|billing|cardiology|heart)\b/i.test(
-    text,
+  return (
+    /\b(washroom|toilet|restroom|bathroom|water|pharmacy|laboratory|lab|radiology|billing|cardiology|heart)\b/i.test(
+      text,
+    ) ||
+    /शौचालय|टॉयलेट|फार्मेसी|लैब|प्रयोगशाला|कार्डियोलॉजी|पानी|बिलिंग|ਟਾਇਲਟ|فارمیسی|টয়লেট|மருந்தகம்|ఫార్మసీ|શૌચાલય/u.test(
+      text,
+    )
   )
 }
 

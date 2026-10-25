@@ -19,6 +19,14 @@ export type MessageCatalog = {
   notFoundTitle: string
   notFoundBody: string
   homeGreeting: string
+  liveQueuesTitle: string
+  liveQueuesHint: string
+  liveQueuesOpenBoard: string
+  liveQueuesNowServing: string
+  liveQueuesQuiet: string
+  liveQueuesWaiting: string
+  liveQueuesNoWaiting: string
+  liveQueuesLoadError: string
   register: string
   registerHint: string
   myTurn: string
@@ -356,6 +364,9 @@ export type MessageCatalog = {
   contrastHigh: string
   savedOnDevice: string
   staffTitle: string
+  staffHomeLink: string
+  staffDemoLogin: string
+  staffDemoLoginHint: string
   staffAuthNotice: string
   staffBody: string
   forecastLink: string

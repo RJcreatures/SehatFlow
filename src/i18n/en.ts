@@ -23,6 +23,15 @@ export const en = {
   notFoundTitle: "Page not found",
   notFoundBody: "That address is not part of this demonstration.",
   homeGreeting: "How can we help you today?",
+  liveQueuesTitle: "Live queues",
+  liveQueuesHint:
+    "Fictional OPD tokens updating now. Register for a real token, or open the full board.",
+  liveQueuesOpenBoard: "Full board",
+  liveQueuesNowServing: "Now {token}",
+  liveQueuesQuiet: "No one called",
+  liveQueuesWaiting: "Next: {tokens}",
+  liveQueuesNoWaiting: "No one waiting",
+  liveQueuesLoadError: "Could not load live queues.",
   register: "Register",
   registerHint: "Start an outpatient visit",
   myTurn: "I have my slip",
@@ -417,6 +426,10 @@ export const en = {
   contrastHigh: "High contrast",
   savedOnDevice: "Your choices are saved on this device.",
   staffTitle: "Staff",
+  staffHomeLink: "Staff dashboard",
+  staffDemoLogin: "Demo login for judges",
+  staffDemoLoginHint:
+    "One-click sign-in for the fictional hospital demo. No email or password needed.",
   staffAuthNotice:
     "A real hospital would need production access controls. This demonstration uses Supabase Auth for staff only. There is no public staff registration.",
   staffBody: "Sign in to open the fictional hospital queue dashboard.",

@@ -82,4 +82,19 @@ export async function resetDemo(client: AppSupabase) {
   return client.rpc("reset_demo")
 }
 
+export type EnsureDemoQueueResult = {
+  ok: boolean
+  action?: "noop" | "seeded" | string
+  reason?: string
+  active_tokens?: number
+  departments_with_queue?: number
+  patients?: number
+  queue_entries?: number
+  service_date?: string
+}
+
+export async function ensureDemoQueue(client: AppSupabase) {
+  return client.rpc("ensure_demo_queue")
+}
+
 export type { BoardSnapshotRow, DemoClockPayload, ResetDemoResult }

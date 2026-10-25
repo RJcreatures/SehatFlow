@@ -66,8 +66,8 @@ These hosted steps were not executed in this workspace.
    - `supabase/migrations/20261022160700_phase3_queue_engine.sql`
    - CLI: `npx supabase db push`, or run them in order in the SQL editor.
 4. Put the project URL and publishable/anon key in `.env`.
-5. Create a staff Auth user in the dashboard. Do not add a public registration form.
-6. Provision membership from the SQL editor (no `auth.uid()` in that session):
+5. Create a staff Auth user in the dashboard, **or** deploy `demo-staff-login` and use **Demo login for judges** on `/staff` (no email/password). Do not add a public registration form.
+6. If you create a custom staff user, provision membership from the SQL editor (no `auth.uid()` in that session):
 
 ```sql
 insert into public.staff_members (user_id, display_name, role, active)
@@ -76,8 +76,8 @@ values ('00000000-0000-4000-8000-000000000000', 'Demo Manager', 'queue_manager',
 
 Allowed roles: `admin`, `registrar`, `doctor`, `queue_manager`.
 
-7. Sign in at `/staff`, then use **Reset fictional demo** to load exactly 20 demo patients.
-8. Open `/board` for the public waiting-room display. It calls `get_board_snapshot()` only.
+7. Opening the patient home or `/board` calls `ensure_demo_queue()` once (idempotent). If today’s board is sparse or the demo clock has drifted, it reseeds the fixed 20 fictional visits; reloads do not stack extra rows. Staff can still use **Reset fictional demo** on `/staff`.
+8. Open `/board` (or the home **Live queues** panel) for the public waiting-room display. It calls `get_board_snapshot()` only for tokens — no patient names.
 
 ## Phase 4 registration and My Turn
 
@@ -89,9 +89,10 @@ Allowed roles: `admin`, `registrar`, `doctor`, `queue_manager`.
 ```bash
 npx supabase functions deploy register-patient --project-ref hhvgkwulxgfuhhucmmyt
 npx supabase functions deploy get-my-turn --project-ref hhvgkwulxgfuhhucmmyt
+npx supabase functions deploy demo-staff-login --project-ref hhvgkwulxgfuhhucmmyt
 ```
 
-3. Keep `verify_jwt = false` for those two functions in `supabase/config.toml`. They accept the publishable key from the browser and use the platform service role only inside the function.
+3. Keep `verify_jwt = false` for those browser-callable functions in `supabase/config.toml`. They accept the publishable key from the browser and use the platform service role only inside the function.
 4. Browser `.env` still needs only `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`.
 5. Register at `/register`, read the slip at `/slip`, then check `/my-turn` with token + access code.
 

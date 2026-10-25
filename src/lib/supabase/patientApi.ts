@@ -63,3 +63,18 @@ export async function getMyTurn(client: AppSupabase, body: MyTurnRequest) {
     body,
   })
 }
+
+export type DemoStaffSessionResponse = {
+  access_token: string
+  refresh_token: string
+  expires_in?: number
+  expires_at?: number
+  token_type?: string
+}
+
+/** One-click fictional staff session for judges. No password form required. */
+export async function demoStaffLogin(client: AppSupabase) {
+  return client.functions.invoke<DemoStaffSessionResponse>("demo-staff-login", {
+    body: {},
+  })
+}

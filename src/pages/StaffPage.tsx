@@ -65,6 +65,17 @@ export function StaffPage() {
   if (auth.status === "signed_out") {
     return (
       <PageHeading title={messages.staffTitle}>
+        <p>{messages.staffDemoLoginHint}</p>
+        <div className="choice-row">
+          <button
+            type="button"
+            className="button"
+            onClick={() => void auth.signInDemo()}
+            disabled={auth.busy}
+          >
+            {messages.staffDemoLogin}
+          </button>
+        </div>
         <p>{messages.staffSignInHint}</p>
         <form className="panel settings-form" onSubmit={onSubmit}>
           <label className="field">
@@ -94,7 +105,7 @@ export function StaffPage() {
               {auth.error}
             </p>
           ) : null}
-          <button type="submit" className="button" disabled={auth.busy}>
+          <button type="submit" className="button button-secondary" disabled={auth.busy}>
             {messages.signIn}
           </button>
         </form>

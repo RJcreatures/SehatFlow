@@ -29,6 +29,7 @@ export type StaffAuthValue = {
   error: string | null
   busy: boolean
   signIn: (email: string, password: string) => Promise<void>
+  signInDemo: () => Promise<void>
   signOut: () => Promise<void>
   clearError: () => void
 }

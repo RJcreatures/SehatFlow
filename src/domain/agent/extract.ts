@@ -36,6 +36,16 @@ const DEPT_ALIASES: Record<string, (typeof CONFIGURED_DEPARTMENT_CODES)[number]>
     ophthalmology: "ophthalmology",
     dermatology: "dermatology",
     skin: "dermatology",
+    // Hindi / common Indic aliases
+    "सामान्य चिकित्सा": "general_medicine",
+    मेडिसिन: "general_medicine",
+    बाल: "pediatrics",
+    बच्चे: "pediatrics",
+    स्त्री: "womens_health",
+    हड्डी: "orthopedics",
+    कान: "ent",
+    आँख: "ophthalmology",
+    त्वचा: "dermatology",
   }
 
 const SPOKEN_ONES: Record<string, number> = {

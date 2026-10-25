@@ -9,6 +9,7 @@ import {
   readSupabaseState,
 } from "../lib/supabase/client.ts"
 import type { BoardSnapshotRow } from "../lib/supabase/database.types.ts"
+import { ensureDemoQueueOnce } from "../lib/supabase/ensureDemo.ts"
 import { supabaseErrorMessage } from "../lib/supabase/errors.ts"
 import { fetchBoardSnapshot } from "../lib/supabase/queueApi.ts"
 import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
@@ -36,6 +37,7 @@ export function BoardPage() {
     let cancelled = false
 
     async function load() {
+      await ensureDemoQueueOnce()
       const { data, error: loadError } = await fetchBoardSnapshot(supabase)
       if (cancelled) {
         return

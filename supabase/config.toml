@@ -436,6 +436,12 @@ entrypoint = "./functions/get-my-turn/index.ts"
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/get-my-turn/*.html" ]
 
+[functions.demo-staff-login]
+enabled = true
+verify_jwt = false
+import_map = "./functions/demo-staff-login/deno.json"
+entrypoint = "./functions/demo-staff-login/index.ts"
+
 [functions.voice-assist]
 enabled = true
 verify_jwt = false

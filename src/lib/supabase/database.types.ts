@@ -324,6 +324,10 @@ export type Database = {
         Args: Record<string, never>
         Returns: ResetDemoResult
       }
+      ensure_demo_queue: {
+        Args: Record<string, never>
+        Returns: Record<string, unknown>
+      }
       get_demo_clock: {
         Args: Record<string, never>
         Returns: DemoClockPayload

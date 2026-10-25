@@ -1,11 +1,18 @@
+import { useEffect } from "react"
 import { Link, NavLink, Outlet } from "react-router"
+import { ensureDemoQueueOnce } from "../lib/supabase/ensureDemo.ts"
 import { useMessages } from "../preferences/usePreferences.ts"
 import { StaffAuthProvider } from "../staff/StaffAuthProvider.tsx"
 import { useStaffAuth } from "../staff/useStaffAuth.ts"
 import { AppBrand } from "./AppBrand.tsx"
+
 function StaffChrome() {
   const messages = useMessages()
   const auth = useStaffAuth()
+
+  useEffect(() => {
+    void ensureDemoQueueOnce()
+  }, [])
 
   return (
     <div className="app-shell">

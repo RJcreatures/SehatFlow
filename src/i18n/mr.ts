@@ -23,6 +23,15 @@ export const mr = {
   notFoundTitle: "पान सापडले नाही",
   notFoundBody: "हा पत्ता या प्रात्यक्षिकाचा भाग नाही.",
   homeGreeting: "आज आम्ही तुमची कशी मदत करू शकतो?",
+  liveQueuesTitle: "लाइव्ह रांगा",
+  liveQueuesHint:
+    "काल्पनिक OPD टोकन आता अपडेट होत आहेत. नोंदणी करा किंवा पूर्ण बोर्ड उघडा.",
+  liveQueuesOpenBoard: "पूर्ण बोर्ड",
+  liveQueuesNowServing: "आता {token}",
+  liveQueuesQuiet: "कोणीही कॉल नाही",
+  liveQueuesWaiting: "पुढील: {tokens}",
+  liveQueuesNoWaiting: "कोणीही प्रतीक्षा नाही",
+  liveQueuesLoadError: "लाइव्ह रांगा लोड करता आल्या नाहीत.",
   register: "नोंदणी",
   registerHint: "ओपीडी भेट सुरू करा",
   myTurn: "माझ्याकडे चिठ्ठी आहे",
@@ -400,6 +409,10 @@ export const mr = {
   contrastHigh: "उच्च कॉन्ट्रास्ट",
   savedOnDevice: "तुमच्या निवडी या डिव्हाइसवर जतन केल्या आहेत.",
   staffTitle: "कर्मचारी",
+  staffHomeLink: "कर्मचारी डॅशबोर्ड",
+  staffDemoLogin: "न्यायाधीशांसाठी डेमो लॉगिन",
+  staffDemoLoginHint:
+    "काल्पनिक रुग्णालय डेमोसाठी एका क्लिकने साइन इन. ईमेल किंवा पासवर्डची गरज नाही.",
   staffAuthNotice:
     "खऱ्या रुग्णालयात उत्पादन प्रवेश नियंत्रण आवश्यक असतील. या प्रात्यक्षिकात फक्त कर्मचाऱ्यांसाठी Supabase Auth आहे. सार्वजनिक कर्मचारी नोंदणी नाही.",
   staffBody: "काल्पनिक रुग्णालयाचे रांग डॅशबोर्ड उघडण्यासाठी साइन इन करा.",

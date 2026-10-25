@@ -1,4 +1,6 @@
+import { useEffect } from "react"
 import { Link, Outlet, useLocation } from "react-router"
+import { ensureDemoQueueOnce } from "../lib/supabase/ensureDemo.ts"
 import { useMessages, usePreferences } from "../preferences/usePreferences.ts"
 import { AppBrand } from "./AppBrand.tsx"
 import { EmergencyBar } from "./EmergencyBar.tsx"
@@ -17,6 +19,10 @@ export function PatientLayout() {
   // Emergency must stay reachable before onboarding/registration completes.
   const showOnboarding = onboardingIncomplete && !onEmergency
   const showPatientChrome = !showOnboarding && !onEmergency
+
+  useEffect(() => {
+    void ensureDemoQueueOnce()
+  }, [])
 
   return (
     <div
@@ -37,6 +43,9 @@ export function PatientLayout() {
           subtitleLang={preferences.language}
         />
         <div className="topbar-actions">
+          <Link className="choice" to="/staff">
+            {messages.staffTitle}
+          </Link>
           {showOnboarding ? null : (
             <Link className="choice" to="/settings">
               {messages.settings}

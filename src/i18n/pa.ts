@@ -23,6 +23,15 @@ export const pa = {
   notFoundTitle: "ਪੰਨਾ ਨਹੀਂ ਮਿਲਿਆ",
   notFoundBody: "ਇਹ ਪਤਾ ਇਸ ਪ੍ਰਦਰਸ਼ਨ ਵਿੱਚ ਨਹੀਂ ਹੈ।",
   homeGreeting: "ਅੱਜ ਅਸੀਂ ਤੁਹਾਡੀ ਕਿਵੇਂ ਮਦਦ ਕਰ ਸਕਦੇ ਹਾਂ?",
+  liveQueuesTitle: "ਲਾਈਵ ਕਤਾਰਾਂ",
+  liveQueuesHint:
+    "ਕਾਲਪਨਿਕ OPD ਟੋਕਨ ਹੁਣ ਅੱਪਡੇਟ ਹੋ ਰਹੇ ਹਨ। ਰਜਿਸਟਰ ਕਰੋ ਜਾਂ ਪੂਰੀ ਬੋਰਡ ਖੋਲ੍ਹੋ।",
+  liveQueuesOpenBoard: "ਪੂਰੀ ਬੋਰਡ",
+  liveQueuesNowServing: "ਹੁਣ {token}",
+  liveQueuesQuiet: "ਕੋਈ ਕਾਲ ਨਹੀਂ",
+  liveQueuesWaiting: "ਅਗਲੇ: {tokens}",
+  liveQueuesNoWaiting: "ਕੋਈ ਉਡੀਕ ਨਹੀਂ",
+  liveQueuesLoadError: "ਲਾਈਵ ਕਤਾਰਾਂ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕੀਆਂ।",
   register: "ਰਜਿਸਟ੍ਰੇਸ਼ਨ",
   registerHint: "ਓਪੀਡੀ ਮੁਲਾਕਾਤ ਸ਼ੁਰੂ ਕਰੋ",
   myTurn: "ਮੇਰੇ ਕੋਲ ਪਰਚੀ ਹੈ",
@@ -400,6 +409,10 @@ export const pa = {
   contrastHigh: "ਉੱਚਾ ਕੰਟ੍ਰਾਸਟ",
   savedOnDevice: "ਤੁਹਾਡੇ ਵਿਕਲਪ ਇਸ ਡਿਵਾਈਸ 'ਤੇ ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ।",
   staffTitle: "ਸਟਾਫ਼",
+  staffHomeLink: "ਸਟਾਫ਼ ਡੈਸ਼ਬੋਰਡ",
+  staffDemoLogin: "ਜੱਜਾਂ ਲਈ ਡੈਮੋ ਲਾਗਇਨ",
+  staffDemoLoginHint:
+    "ਕਾਲਪਨਿਕ ਹਸਪਤਾਲ ਡੈਮੋ ਲਈ ਇੱਕ ਕਲਿੱਕ ਵਿੱਚ ਸਾਈਨ ਇਨ। ਈਮੇਲ ਜਾਂ ਪਾਸਵਰਡ ਦੀ ਲੋੜ ਨਹੀਂ।",
   staffAuthNotice:
     "ਅਸਲ ਹਸਪਤਾਲ ਵਿੱਚ ਉਤਪਾਦਨ ਪਹੁੰਚ ਨਿਯੰਤਰਣ ਜ਼ਰੂਰੀ ਹੋਣਗੇ। ਇਸ ਪ੍ਰਦਰਸ਼ਨ ਵਿੱਚ ਕੇਵਲ ਸਟਾਫ਼ ਲਈ Supabase Auth ਵਰਤੀ ਜਾਂਦੀ ਹੈ। ਜਨਤਕ ਸਟਾਫ਼ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਨਹੀਂ ਹੈ।",
   staffBody: "ਕਾਲਪਨਿਕ ਹਸਪਤਾਲ ਕਤਾਰ ਡੈਸ਼ਬੋਰਡ ਖੋਲ੍ਹਣ ਲਈ ਸਾਈਨ ਇਨ ਕਰੋ।",

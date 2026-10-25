@@ -23,6 +23,15 @@ export const te = {
   notFoundTitle: "పేజీ కనుగొనబడలేదు",
   notFoundBody: "ఈ చిరునామా ఈ ప్రదర్శనలో భాగం కాదు.",
   homeGreeting: "ఈరోజు మేము మీకు ఎలా సహాయం చేయగలం?",
+  liveQueuesTitle: "లైవ్ క్యూలు",
+  liveQueuesHint:
+    "కల్పిత OPD టోకెన్లు ఇప్పుడు అప్‌డేట్ అవుతున్నాయి. నమోదు చేయండి లేదా పూర్తి బోర్డు తెరవండి.",
+  liveQueuesOpenBoard: "పూర్తి బోర్డు",
+  liveQueuesNowServing: "ఇప్పుడు {token}",
+  liveQueuesQuiet: "ఎవరూ కాల్ కాలేదు",
+  liveQueuesWaiting: "తర్వాత: {tokens}",
+  liveQueuesNoWaiting: "ఎవరూ వేచి లేరు",
+  liveQueuesLoadError: "లైవ్ క్యూలు లోడ్ కాలేదు.",
   register: "నమోదు",
   registerHint: "ఓపీడీ సందర్శన ప్రారంభించండి",
   myTurn: "నా దగ్గర స్లిప్ ఉంది",
@@ -400,6 +409,10 @@ export const te = {
   contrastHigh: "అధిక కాంట్రాస్ట్",
   savedOnDevice: "మీ ఎంపికలు ఈ పరికరంలో సేవ్ అవుతాయి.",
   staffTitle: "సిబ్బంది",
+  staffHomeLink: "సిబ్బంది డాష్‌బోర్డ్",
+  staffDemoLogin: "న్యాయనిర్ణేతల కోసం డెమో లాగిన్",
+  staffDemoLoginHint:
+    "కల్పిత ఆసుపత్రి డెమోకు ఒక క్లిక్‌తో సైన్ ఇన్. ఇమెయిల్ లేదా పాస్‌వర్డ్ అవసరం లేదు.",
   staffAuthNotice:
     "నిజమైన హాస్పిటల్‌కు ఉత్పత్తి యాక్సెస్ నియంత్రణలు అవసరం. ఈ ప్రదర్శనలో సిబ్బందికి మాత్రమే Supabase Auth ఉంది. పబ్లిక్ సిబ్బంది నమోదు లేదు.",
   staffBody: "కాల్పనిక హాస్పిటల్ క్యూ డాష్‌బోర్డ్ తెరవడానికి సైన్ ఇన్ చేయండి.",

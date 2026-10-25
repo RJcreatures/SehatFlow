@@ -7,6 +7,7 @@ import {
   IconSlip,
   IconVisitDays,
 } from "../components/icons.tsx"
+import { LiveQueuesPanel } from "../components/LiveQueuesPanel.tsx"
 import { PageHeading } from "../components/PageHeading.tsx"
 import { useMessages } from "../preferences/usePreferences.ts"
 
@@ -15,7 +16,14 @@ export function HomePage() {
 
   return (
     <>
-      <PageHeading title={messages.homeGreeting} />
+      <PageHeading title={messages.homeGreeting}>
+        <p className="status-line">
+          <Link className="choice" to="/staff">
+            {messages.staffHomeLink}
+          </Link>
+        </p>
+      </PageHeading>
+      <LiveQueuesPanel />
       <nav className="action-list" aria-label={messages.primaryNav}>
         <Link className="button" to="/register">
           <IconRegister />
